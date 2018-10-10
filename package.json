@@ -8,9 +8,9 @@
   "scripts": {
     "start": "node app.js",
     "dev-server": "nodemon ./server/index.js",
-    "dev-client": "cross-env NODE_ENV=dev webpack-dev-server --progress --mode development --config webpack.config.dev.js",
+    "dev-client": "cross-env NODE_ENV=dev webpack-dev-server --progress --mode development --config ./webpack.config.dev.js",
     "dev": "npm-run-all -p dev-server dev-client",
-    "build": "webpack -p --progress --mode production --config webpack.config.build.js"
+    "build": "webpack -p --progress --mode production --config ./webpack.config.build.js"
   },
   "dependencies": {
     "@babel/polyfill": "^7.0.0",
