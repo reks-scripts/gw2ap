@@ -1,0 +1,12 @@
+@import 'node_modules/bootstrap/scss/bootstrap';
+
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+.pagination {
+  margin: .425em 0 2px!important;
+}

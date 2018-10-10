@@ -1,0 +1,9 @@
+{
+    "presets": [
+        ["@babel/env", { "modules": false }]
+    ],
+    "plugins": [
+        "syntax-dynamic-import",
+        "transform-es2015-arrow-functions"
+    ]
+}

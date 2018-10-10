@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>
+    <%= htmlWebpackPlugin.options.title %>
+  </title>
+</head>
+
+<body class="bg-light">
+
+  <div id="page-1" class="container">
+    <div class="py-4 text-center">
+      <img class="d-block mx-auto mb-3" src="assets/images/ap-72px.png" alt="" width="72" height="72">
+      <h2>Welcome to GW2AP</h2>
+      <h4>Quick and easy filtering and sorting of your Guild Wars 2 achievements</h4>
+      <p class="lead">To get started, please
+        <a href="https://account.arena.net/applications/create" target="_blank">create a new API key</a> with progression permission, paste it below and click Process My Achievements.</p>
+    </div>
+    <div class="col-md-12 order-md-1">
+      <form>
+        <div class="mb-3">
+          <label for="api-key">API Key</label>
+          <input type="text" class="form-control" id="api-key" placeholder="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXXXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX">
+        </div>
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" class="custom-control-input" id="remember-api-key">
+          <label class="custom-control-label" for="remember-api-key">Remember my API key</span>
+          </label>
+        </div>
+        <hr class="mb-4">
+        <button class="btn btn-primary btn-lg btn-block" type="submit">Process My Achievements</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="page-2" class="container" style="display:none">
+    <div class="py-3 text-center">
+      <img class="d-block mx-auto" src="assets/images/ap-72px.png" alt="" width="72" height="72">
+    </div>
+    <div class="col-md-12 order-md-1">
+      <div class="btn-group" role="group" aria-label="Progress">
+        <button id="btn-filter-in-progress" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">In Progress</button>
+        <button id="btn-filter-not-started" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">Not Started</button>
+        <button id="btn-filter-complete" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">Completed</button>
+        <!--<button id="btn-filter-title" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">Title</button>
+        <button id="btn-filter-mastery" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">Mastery</button>
+        <button id="btn-filter-item" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">Item</button>
+        <button id="btn-filter-coins" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">Coins</button>
+        <button id="btn-filter-item-set" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">Item Set</button>
+        <button id="btn-filter-category" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">Category</button>
+        <button id="btn-filter-hidden" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">Hidden</button>
+        <button id="btn-filter-repeatable" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">Repeatable</button>
+        <button id="btn-filter-unlockable" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">Unlockable</button>
+        <button id="btn-filter-daily" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">Daily</button>-->
+      </div>
+      <hr class="mb-4">
+      <table id="achievements" class="table table-striped display nowrap bg-white" style="width:100%">
+        <thead>
+          <tr>
+            <th>Tier Progress</th>
+            <th>Name</th>
+            <th>AP Next Tier</th>
+            <th>Total Progress</th>
+            <th>Remaining AP</th>
+            <th>Rewards</th>
+            <th>Flags</th>
+            <th>Description</th>
+            <th>Type</th>
+            <th>ID</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+  </div>
+
+  <footer class="my-3 pt-5 text-muted text-center text-small">
+    <p class="mb-1">
+      <a href="#">reks-scripts</a>
+    </p>
+  </footer>
+  </div>
+</body>
+
+</html>
