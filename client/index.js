@@ -36,6 +36,9 @@ import { filterInProgress } from './filters/filter-in-progress'
 import { filterNotStarted } from './filters/filter-not-started'
 import { filterComplete } from './filters/filter-complete'
 
+// Is the current build a development build
+//const IS_DEV = IS_DEV || false
+
 // APP CODE
 let $dataTable
 
@@ -50,7 +53,11 @@ const fetch = async (url, options) => {
 }
 
 const getAchievements = async apiKey => {
-  return fetch(`api/achievements/${apiKey}`)
+  let url = `api/achievements/${apiKey}`
+  if (IS_DEV) {
+    url = `http://localhost:3000/${url}`
+  }
+  return fetch(url)
 }
 
 const setApiKey = value => {
@@ -84,8 +91,33 @@ const initDataTable = data => {
     data: data,
     scrollCollapse: true,
     select: true,
+    stateSave: true,
     //responsive: true,
     columnDefs: [
+      {
+        targets: [
+          COLUMNS.TIER_PROGRESS.INDEX,
+          COLUMNS.NEXT_TIER_AP.INDEX,
+          COLUMNS.TOTAL_PROGRESS.INDEX,
+          COLUMNS.REMAINING_AP.INDEX
+        ],
+        orderSequence: ['desc', 'asc']
+      },
+      {
+        targets: [
+          COLUMNS.ID.INDEX
+        ],
+        searchable: false
+      },
+      {
+        targets: [
+          COLUMNS.REWARDS.INDEX,
+          COLUMNS.FLAGS.INDEX,
+          COLUMNS.TYPE.INDEX,
+          COLUMNS.ID.INDEX
+        ],
+        visible: false
+      },
       {
         targets: COLUMNS.NAME.INDEX,
         render: $.fn.dataTable.render.wikiLink( 35 )
@@ -102,16 +134,16 @@ const initDataTable = data => {
         render: $.fn.dataTable.render.percentageBars()
       }
     ],
-    order: [[0, 'desc']],
+    order: [[COLUMNS.TIER_PROGRESS.INDEX, 'desc']],
     columns: [
       { data: COLUMNS.TIER_PROGRESS.DATA },
       { data: COLUMNS.NAME.DATA },
       { data: COLUMNS.NEXT_TIER_AP.DATA },
       { data: COLUMNS.TOTAL_PROGRESS.DATA },
       { data: COLUMNS.REMAINING_AP.DATA },
+      { data: COLUMNS.DESCRIPTION.DATA },
       { data: COLUMNS.REWARDS.DATA },
       { data: COLUMNS.FLAGS.DATA },
-      { data: COLUMNS.DESCRIPTION.DATA },
       { data: COLUMNS.TYPE.DATA },
       { data: COLUMNS.ID.DATA }
     ]
@@ -137,7 +169,7 @@ const bindEvents = () => {
     if (!$dataTable) {
       initDataTable(result)
     }
-    $('#btn-filter-in-progress').trigger('click')
+    $('#btn-filter-in-progress').click()
     $('#page-1').hide()
     $('#page-2').show()
     $.LoadingOverlay('hide')
@@ -159,5 +191,4 @@ const loadForm = () => {
 $(() => {
   loadForm()
   bindEvents()
-  console.log('ready')
 })

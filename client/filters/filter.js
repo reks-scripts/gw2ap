@@ -5,13 +5,15 @@ import $ from 'jquery'
 import { forEach } from 'lodash'
 
 class Filter {
-  constructor () {
+  constructor() {
     this.toggle = false
     this.filter = null
   }
 
-  action (e) {
+  action(e) {
+    console.log(e)
     if (this.toggle === false) {
+      $('#filter-progress button.active').click()
       $.fn.dataTable.ext.search.push(this.filter)
       this.toggle = true
     } else {

@@ -129,10 +129,6 @@ const getFlags = achievement => {
   return result
 }
 
-const sortAchievementsByProperty = (achievements, property) => {
-  return _.orderBy(achievements, property, 'desc')
-}
-
 const getAchievementProgressByID = (myAchievements, id) => {
   let result = {}
   _.forEach(myAchievements, myAchievement => {

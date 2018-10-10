@@ -5,10 +5,12 @@ import { Filter } from './filter'
 import { COLUMNS } from '../helpers/column-definitions'
 
 class FilterNotStarted extends Filter {
-  constructor () {
+  constructor() {
     super()
-    this.filter = ( settings, data, dataIndex ) => {
-      if (parseInt(data[COLUMNS.TOTAL_PROGRESS.INDEX]) === 0) {
+    this.filter = (settings, data, dataIndex) => {
+      const totalProgress = parseInt(data[COLUMNS.TOTAL_PROGRESS.INDEX])
+      const tierProgress = parseInt(data[COLUMNS.TIER_PROGRESS.INDEX])
+      if (tierProgress === 0 && totalProgress === 0) {
         return true
       } else {
         return false

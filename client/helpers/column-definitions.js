@@ -21,16 +21,16 @@ const COLUMNS = {
     DATA: 'remainingAP',
     INDEX: 4
   },
+  DESCRIPTION: {
+    DATA: 'description',
+    INDEX: 5
+  },
   REWARDS: {
     DATA: 'rewards',
-    INDEX: 5
+    INDEX: 6
   },
   FLAGS: {
     DATA: 'flags',
-    INDEX: 6
-  },
-  DESCRIPTION: {
-    DATA: 'description',
     INDEX: 7
   },
   TYPE: {

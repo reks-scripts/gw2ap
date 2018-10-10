@@ -5,9 +5,9 @@ import { Filter } from './filter'
 import { COLUMNS } from '../helpers/column-definitions'
 
 class FilterComplete extends Filter {
-  constructor () {
+  constructor() {
     super()
-    this.filter = ( settings, data, dataIndex ) => {
+    this.filter = (settings, data, dataIndex) => {
       if (parseInt(data[COLUMNS.TOTAL_PROGRESS.INDEX]) === 100) {
         return true
       } else {

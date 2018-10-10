@@ -10,3 +10,10 @@ html {
 .pagination {
   margin: .425em 0 2px!important;
 }
+
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  text-indent: 1px;
+  text-overflow: '';
+}

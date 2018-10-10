@@ -5,11 +5,13 @@ import { Filter } from './filter'
 import { COLUMNS } from '../helpers/column-definitions'
 
 class FilterInProgress extends Filter {
-  constructor () {
+  constructor() {
     super()
-    this.filter = ( settings, data, dataIndex ) => {
-      const progress = parseInt(data[COLUMNS.TOTAL_PROGRESS.INDEX])
-      if (0 < progress && progress < 100) {
+    this.filter = (settings, data, dataIndex) => {
+      const totalProgress = parseInt(data[COLUMNS.TOTAL_PROGRESS.INDEX])
+      const tierProgress = parseInt(data[COLUMNS.TIER_PROGRESS.INDEX])
+      console.log(`totalProgress: ${totalProgress}, tierProgress: ${tierProgress}`)
+      if ((0 < totalProgress && totalProgress < 100) || (0 < tierProgress && tierProgress < 100)) {
         return true
       } else {
         return false
