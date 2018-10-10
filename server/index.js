@@ -22,7 +22,7 @@ const provision = async () => {
     plugin: HapiGate,
     options: {
       https: false,
-      www: false
+      www: true
     }
   })
 
