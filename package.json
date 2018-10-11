@@ -1,6 +1,6 @@
 {
   "name": "gw2ap",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Quick and easy searching and sorting of your Guild Wars 2 achievements",
   "author": "Ryan Knowles",
   "license": "MIT",
@@ -27,7 +27,6 @@
     "datatables.net-select-bs4": "^1.2.7",
     "gasparesganga-jquery-loading-overlay": "^2.1.6",
     "hapi": "^17.6.0",
-    "hapi-gate": "^2.1.0",
     "inert": "^5.1.0",
     "jquery": "^3.3.1",
     "lodash": "4.17.11",

@@ -11,7 +11,6 @@ class Filter {
   }
 
   action(e) {
-    console.log(e)
     if (this.toggle === false) {
       $('#filter-progress button.active').click()
       $.fn.dataTable.ext.search.push(this.filter)
