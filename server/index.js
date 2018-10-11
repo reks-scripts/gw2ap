@@ -3,6 +3,7 @@
 const Path = require('path')
 const Hapi = require('hapi')
 const Inert = require('inert')
+const HapiGate = require ('hapi-gate')
 const processAchievements = require('./gw2api')
 
 const server = Hapi.server({
@@ -17,6 +18,13 @@ const server = Hapi.server({
 
 const provision = async () => {
   await server.register(Inert)
+  await server.register({
+    plugin: HapiGate,
+    options: {
+      https: false,
+      nonwww: true
+    }
+  })
 
   server.route({
     method: 'GET',
@@ -28,11 +36,27 @@ const provision = async () => {
   
   server.route({
     method: 'GET',
-    path: '/assets/images/{path*}',
+    path: '/assets/{path*}',
     handler: {
       directory: {
-        path: './assets/images/'
+        path: './assets/'
       }
+    }
+  })
+
+  server.route({
+    method: 'GET',
+    path: '/favicon.ico',
+    handler: function (request, h) {
+        return h.file('./assets/favicon.ico');
+    }
+  })
+
+  server.route({
+    method: 'GET',
+    path: '/site.webmanifest',
+    handler: function (request, h) {
+        return h.file('./assets/site.webmanifest');
     }
   })
 

@@ -1,9 +1,9 @@
 {
-    "name": "",
-    "short_name": "",
+    "name": "GW2AP",
+    "short_name": "GW2AP",
     "icons": [
         {
-            "src": "/android-chrome-72x72.png",
+            "src": "/assets/images/android-chrome-72x72.png",
             "sizes": "72x72",
             "type": "image/png"
         }
