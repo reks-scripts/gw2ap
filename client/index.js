@@ -92,7 +92,7 @@ const initDataTable = data => {
     scrollCollapse: true,
     select: true,
     stateSave: true,
-    //responsive: true,
+    responsive: true,
     columnDefs: [
       {
         targets: [

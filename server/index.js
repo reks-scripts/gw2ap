@@ -21,7 +21,7 @@ const provision = async () => {
   await server.register({
     plugin: HapiGate,
     options: {
-      https: true,
+      https: false,
       nonwww: true
     }
   })
