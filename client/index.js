@@ -40,9 +40,6 @@ import { filterItem } from './filters/filter-reward-item'
 import { filterMastery } from './filters/filter-reward-mastery'
 import { filterTitle } from './filters/filter-reward-title'
 
-// Is the current build a development build
-//const IS_DEV = IS_DEV || false
-
 // APP CODE
 let $dataTable
 
@@ -93,10 +90,14 @@ const initDataTable = data => {
 
   $dataTable = $('#achievements').DataTable({
     data: data,
+    pagingType: 'full',
     scrollCollapse: true,
     select: true,
     stateSave: true,
     responsive: true,
+    language: {
+      infoFiltered: ''
+    },
     columnDefs: [
       {
         targets: [
