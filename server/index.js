@@ -1,11 +1,13 @@
 'use strict'
 
+// Load modules
 const Path = require('path')
 const Hapi = require('hapi')
 const Inert = require('inert')
-const HapiGate = require ('hapi-gate')
-const processAchievements = require('./gw2api')
+const HapiGate = require('hapi-gate')
+const Routes = require('./routes')
 
+// Declare internals
 const server = Hapi.server({
   port: process.env.port || 3000,
   routes: {
@@ -25,53 +27,7 @@ const provision = async () => {
       nonwww: true
     }
   })
-
-  server.route({
-    method: 'GET',
-    path: '/api/achievements/{apiKey}',
-    handler: function (request, h) {
-      return processAchievements(request.params.apiKey)
-    }
-  })
-  
-  server.route({
-    method: 'GET',
-    path: '/assets/{path*}',
-    handler: {
-      directory: {
-        path: './assets/'
-      }
-    }
-  })
-
-  server.route({
-    method: 'GET',
-    path: '/favicon.ico',
-    handler: function (request, h) {
-        return h.file('./assets/favicon.ico');
-    }
-  })
-
-  server.route({
-    method: 'GET',
-    path: '/site.webmanifest',
-    handler: function (request, h) {
-        return h.file('./assets/site.webmanifest');
-    }
-  })
-
-  server.route({
-    method: 'GET',
-    path: '/{param*}',
-    handler: {
-      directory: {
-        path: './dist',
-        redirectToSlash: true,
-        index: true,
-      }
-    }
-  })
-
+  await server.route(Routes)
   await server.start()
   console.log(`Server running at: ${server.info.uri}`)
 }

@@ -1,8 +1,10 @@
 'use strict'
 
+// Load modules
 const Fetch = require('node-fetch')
 const _ = require('lodash')
 
+// Declare internals
 const BASE_API = 'https://api.guildwars2.com/v2/'
 
 const GW2_API = {
@@ -109,23 +111,22 @@ const getRemainingAP = (achievement, progress) => {
 }
 
 const getRewards = achievement => {
-  let result = ''
+  let result = []
   if (!achievement.rewards || !achievement.rewards.length) {
     return result
   }
-  result = []
   _.forEach(achievement.rewards, reward => {
     result.push(reward.type)
   })
-  return result.join(', ')
+  return result
 }
 
 const getFlags = achievement => {
-  let result = ''
+  let result = []
   if (!achievement.flags || !achievement.flags.length) {
     return result
   }
-  result = achievement.flags.join(', ')
+  result = achievement.flags
   return result
 }
 
@@ -181,6 +182,12 @@ const possibleResults = {
   ]
 }
 
+const getAchievements = async () => {
+  const achievementIds = await fetch(GW2_API.ACHIEVEMENTS.URL)
+  const achievements = await getAchievementsByBatch(achievementIds)
+  return achievements
+}
+
 const processAchievements = async (apiKey) => {
 
   const achievementIds = await fetch(GW2_API.ACHIEVEMENTS.URL)
@@ -197,4 +204,4 @@ const processAchievements = async (apiKey) => {
   return results
 }
 
-module.exports = processAchievements
+module.exports = { getAchievements, processAchievements }

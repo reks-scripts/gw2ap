@@ -1,12 +1,12 @@
 'use strict'
 
 // Load modules
-import { Filter } from './filter'
+import { Filter, FILTER_GROUPS } from './filter'
 import { COLUMNS } from '../helpers/column-definitions'
 
 class FilterInProgress extends Filter {
   constructor() {
-    super()
+    super(FILTER_GROUPS.PROGRESS)
     this.filter = (settings, data, dataIndex) => {
       const totalProgress = parseInt(data[COLUMNS.TOTAL_PROGRESS.INDEX])
       const tierProgress = parseInt(data[COLUMNS.TIER_PROGRESS.INDEX])

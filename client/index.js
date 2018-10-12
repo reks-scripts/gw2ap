@@ -32,9 +32,13 @@ import { wikiLink } from './plugins/wiki-link'
 import { percentageBars } from './plugins/percentage-bars'
 
 // Data tables filters
+import { filterComplete } from './filters/filter-complete'
 import { filterInProgress } from './filters/filter-in-progress'
 import { filterNotStarted } from './filters/filter-not-started'
-import { filterComplete } from './filters/filter-complete'
+import { filterCoins } from './filters/filter-reward-coins'
+import { filterItem } from './filters/filter-reward-item'
+import { filterMastery } from './filters/filter-reward-mastery'
+import { filterTitle } from './filters/filter-reward-title'
 
 // Is the current build a development build
 //const IS_DEV = IS_DEV || false
@@ -152,9 +156,19 @@ const initDataTable = data => {
 }
 
 const bindEvents = () => {
+  window.addEventListener('resize', () => {
+    if ($dataTable) {
+      $dataTable.draw()
+    }
+  })
+  
   $('#btn-filter-in-progress').on('click', filterInProgress)
   $('#btn-filter-not-started').on('click', filterNotStarted)
   $('#btn-filter-complete').on('click', filterComplete)
+  $('#btn-filter-title').on('click', filterTitle)
+  $('#btn-filter-mastery').on('click', filterMastery)
+  $('#btn-filter-item').on('click', filterItem)
+  $('#btn-filter-coins').on('click', filterCoins)
 
   $('form').on('submit', async e => {
     e.preventDefault()

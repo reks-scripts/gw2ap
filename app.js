@@ -1,3 +1,3 @@
 'use strict'
 
-const app = require('./server')
+const server = require('./server')
