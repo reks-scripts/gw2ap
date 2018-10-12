@@ -39,9 +39,9 @@ const routes = internals.routes = module.exports = [
   },
   {
     method: 'GET',
-    path: '/site.webmanifest',
+    path: '/browserconfig.xml',
     handler: function (request, h) {
-        return h.file('./assets/site.webmanifest');
+        return h.file('./assets/browserconfig.xml');
     }
   },
   {
