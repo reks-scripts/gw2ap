@@ -10,7 +10,7 @@ import 'datatables.net-bs4/css/dataTables.bootstrap4.css'
 // Load modules
 import $ from 'jquery'
 import Fetch from 'node-fetch'
-import { forEach, round, sortBy } from 'lodash'
+import { forEach, values, zipObject } from 'lodash'
 import { COLUMNS } from './helpers/column-definitions'
 
 // Data tables
@@ -29,19 +29,23 @@ import 'datatables.net-select-bs4'
 // Data tables plugins
 import { ellipsis } from './plugins/ellipsis'
 import { wikiLink } from './plugins/wiki-link'
+import * as Category from './plugins/category'
 import { percentageBars } from './plugins/percentage-bars'
 
 // Data tables filters
 import { filterComplete } from './filters/filter-complete'
 import { filterInProgress } from './filters/filter-in-progress'
 import { filterNotStarted } from './filters/filter-not-started'
-import { filterCoins } from './filters/filter-reward-coins'
 import { filterItem } from './filters/filter-reward-item'
 import { filterMastery } from './filters/filter-reward-mastery'
 import { filterTitle } from './filters/filter-reward-title'
+import { filterGroup } from './filters/filter-group'
+import { filterCategory } from './filters/filter-category'
 
 // APP CODE
-let $dataTable
+let $dataTable = null
+
+const API_URL = IS_DEV ? 'http://localhost:3000/' : ''
 
 const log = data => {
   console.log(JSON.stringify(data, null, 2))
@@ -53,11 +57,18 @@ const fetch = async (url, options) => {
   return result.json()
 }
 
+const getGroups = async () => {
+  const url = `${API_URL}api/achievements/groups`
+  return fetch(url)
+}
+
+const getCategories = async () => {
+  const url = `${API_URL}api/achievements/categories`
+  return fetch(url)
+}
+
 const getAchievements = async apiKey => {
-  let url = `api/achievements/${apiKey}`
-  if (IS_DEV) {
-    url = `http://localhost:3000/${url}`
-  }
+  const url = `${API_URL}api/achievements/${apiKey}`
   return fetch(url)
 }
 
@@ -83,10 +94,14 @@ const updateApiKey = (apiKey, remember) => {
 }
 
 const initDataTable = data => {
-  // attach renderers
+  // attach custom renderers
   $.fn.dataTable.render.ellipsis = ellipsis
   $.fn.dataTable.render.wikiLink = wikiLink
+  $.fn.dataTable.render.category = Category.render
   $.fn.dataTable.render.percentageBars = percentageBars
+  // attach custom orderers
+  $.fn.dataTable.category = Category.order
+  $.fn.dataTable.category()
 
   $dataTable = $('#achievements').DataTable({
     data: data,
@@ -116,7 +131,10 @@ const initDataTable = data => {
       },
       {
         targets: [
+          COLUMNS.DESCRIPTION.INDEX,
+          COLUMNS.REQUIREMENT.INDEX,
           COLUMNS.REWARDS.INDEX,
+          COLUMNS.GROUP.INDEX,
           COLUMNS.FLAGS.INDEX,
           COLUMNS.TYPE.INDEX,
           COLUMNS.ID.INDEX
@@ -125,11 +143,11 @@ const initDataTable = data => {
       },
       {
         targets: COLUMNS.NAME.INDEX,
-        render: $.fn.dataTable.render.wikiLink( 35 )
+        render: $.fn.dataTable.render.wikiLink(35)
       },
       {
-        targets: COLUMNS.DESCRIPTION.INDEX,
-        render: $.fn.dataTable.render.ellipsis( 70, true )
+        targets: COLUMNS.CATEGORY.INDEX,
+        render: $.fn.dataTable.render.category()
       },
       {
         targets: [
@@ -146,8 +164,11 @@ const initDataTable = data => {
       { data: COLUMNS.NEXT_TIER_AP.DATA },
       { data: COLUMNS.TOTAL_PROGRESS.DATA },
       { data: COLUMNS.REMAINING_AP.DATA },
+      { data: COLUMNS.CATEGORY.DATA },
       { data: COLUMNS.DESCRIPTION.DATA },
+      { data: COLUMNS.REQUIREMENT.DATA },
       { data: COLUMNS.REWARDS.DATA },
+      { data: COLUMNS.GROUP.DATA },
       { data: COLUMNS.FLAGS.DATA },
       { data: COLUMNS.TYPE.DATA },
       { data: COLUMNS.ID.DATA }
@@ -156,20 +177,37 @@ const initDataTable = data => {
   $('.dataTable').wrap('<div style="overflow:auto" />')
 }
 
+const initGroupSelect = groups => {
+  forEach(groups, group => {
+    $('#select-group').append(`<option value="${group.id}">${group.name}</option>`)
+  })
+  $('#select-group').on('change', e => {
+    filterGroup($(e.currentTarget).val())
+  })
+}
+
+const initCategorySelect = categories => {
+  forEach(categories, category => {
+    $('#select-category').append(`<option value="${category.id}" data-group-id="${category.group.id}" style="display:none;">${category.name}</option>`)
+  })
+  $('#select-category').on('change', e => {
+    filterCategory($(e.currentTarget).val())
+  })
+}
+
 const bindEvents = () => {
   window.addEventListener('resize', () => {
     if ($dataTable) {
       $dataTable.draw()
     }
   })
-  
+
   $('#btn-filter-in-progress').on('click', filterInProgress)
   $('#btn-filter-not-started').on('click', filterNotStarted)
   $('#btn-filter-complete').on('click', filterComplete)
   $('#btn-filter-title').on('click', filterTitle)
   $('#btn-filter-mastery').on('click', filterMastery)
   $('#btn-filter-item').on('click', filterItem)
-  $('#btn-filter-coins').on('click', filterCoins)
 
   $('form').on('submit', async e => {
     e.preventDefault()
@@ -179,11 +217,17 @@ const bindEvents = () => {
     const remember = $('#remember-api-key').is(':checked')
 
     updateApiKey(apiKey, remember)
-    const result = await getAchievements(apiKey)
-
+    
+    const achievements = await getAchievements(apiKey)
     if (!$dataTable) {
-      initDataTable(result)
+      initDataTable(achievements)
     }
+
+    const groups = await getGroups()
+    initGroupSelect(groups)
+    const categories = await getCategories()
+    initCategorySelect(categories)
+    
     $('#btn-filter-in-progress').click()
     $('#page-1').hide()
     $('#page-2').show()
@@ -191,7 +235,7 @@ const bindEvents = () => {
   })
 }
 
-const loadForm = () => {
+const loadForm = async () => {
   const apiKey = getApiKey()
   if (apiKey) {
     $('#api-key').val(apiKey)

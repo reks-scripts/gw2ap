@@ -21,25 +21,37 @@ const COLUMNS = {
     DATA: 'remainingAP',
     INDEX: 4
   },
+  CATEGORY: {
+    DATA: 'category',
+    INDEX: 5
+  },
   DESCRIPTION: {
     DATA: 'description',
-    INDEX: 5
+    INDEX: 6
+  },
+  REQUIREMENT: {
+    DATA: 'requirement',
+    INDEX: 7
   },
   REWARDS: {
     DATA: 'rewards',
-    INDEX: 6
+    INDEX: 8
+  },
+  GROUP: {
+    DATA: 'group.id',
+    INDEX: 9
   },
   FLAGS: {
     DATA: 'flags',
-    INDEX: 7
+    INDEX: 10
   },
   TYPE: {
     DATA: 'type',
-    INDEX: 8
+    INDEX: 11
   },
   ID: {
     DATA: 'id',
-    INDEX: 9
+    INDEX: 12
   }
 }
 

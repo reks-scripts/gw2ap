@@ -1,12 +1,12 @@
 'use strict'
 
 // Load modules
-import { Filter, FILTER_GROUPS } from './filter'
+import { Filter, FILTER_BUTTON_GROUPS } from './filter'
 import { COLUMNS } from '../helpers/column-definitions'
 
 class FilterTitle extends Filter {
   constructor() {
-    super(FILTER_GROUPS.REWARDS)
+    super(FILTER_BUTTON_GROUPS.REWARDS)
     this.filter = (settings, data, dataIndex) => {
       let match = false
       const rewards = data[COLUMNS.REWARDS.INDEX]

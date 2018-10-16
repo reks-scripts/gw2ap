@@ -1,7 +1,6 @@
 'use strict'
 
 // Load modules
-import $ from 'jquery'
 import { ellipsis } from './ellipsis'
 
 // DATA TABLES PLUGIN

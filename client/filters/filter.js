@@ -4,22 +4,22 @@
 import $ from 'jquery'
 import { forEach } from 'lodash'
 
-const FILTER_GROUPS = {
+const FILTER_BUTTON_GROUPS = {
   PROGRESS: 'progress',
   REWARDS: 'rewards'
 }
 
 class Filter {
-  constructor(group) {
+  constructor(buttonGroup) {
     this.toggle = false
     this.filter = null
-    this.group = group || null
+    this.buttonGroup = buttonGroup || null
   }
 
   action(e) {
     if (this.toggle === false) {
-      if (this.group) {
-        $(`#filter-${this.group} button.active`).click()
+      if (this.buttonGroup) {
+        $(`#filter-${this.buttonGroup} button.active`).click()
       }
       $.fn.dataTable.ext.search.push(this.filter)
       this.toggle = true
@@ -36,4 +36,4 @@ class Filter {
   }
 }
 
-export { Filter, FILTER_GROUPS }
+export { Filter, FILTER_BUTTON_GROUPS }
