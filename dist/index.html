@@ -24,7 +24,8 @@
       <h2>Welcome to GW2AP</h2>
       <h4>Quick and easy filtering and sorting of your Guild Wars 2 achievements</h4>
       <p class="lead">To get started, please
-        <a href="https://account.arena.net/applications/create" target="_blank">create a new API key</a> with progression permission, paste it below and click Process My Achievements.</p>
+        <a href="https://account.arena.net/applications/create" target="_blank">create a new API key</a> with
+        progression permission, paste it below and click Process My Achievements.</p>
     </div>
     <div class="col-md-12 order-md-1">
       <form>
@@ -48,23 +49,49 @@
       <img class="d-block mx-auto" src="assets/images/ap-72px.png" alt="" width="72" height="72">
     </div>
     <div class="col-md-12 order-md-1">
-      <div id="filter-progress" class="btn-group" role="group" aria-label="Progress">
-        <button id="btn-filter-in-progress" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">In Progress</button>
-        <button id="btn-filter-not-started" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">Not Started</button>
-        <button id="btn-filter-complete" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">Completed</button>
+      <div class="form-row">
+        <div id="filter-progress" class="col-md-4 btn-group mb-3" role="group" aria-label="Progress">
+          <button id="btn-filter-in-progress" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false"
+            autocomplete="off">In Progress</button>
+          <button id="btn-filter-not-started" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false"
+            autocomplete="off">Not Started</button>
+          <button id="btn-filter-complete" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false"
+            autocomplete="off">Completed</button>
+        </div>
       </div>
-      <div id="filter-rewards" class="btn-group" role="group" aria-label="Rewards">
-        <button id="btn-filter-title" type="button" class="btn btn-secondary" data-toggle="button" aria-pressed="false" autocomplete="off">Title</button>
-        <button id="btn-filter-mastery" type="button" class="btn btn-secondary" data-toggle="button" aria-pressed="false" autocomplete="off">Mastery</button>
-        <button id="btn-filter-item" type="button" class="btn btn-secondary" data-toggle="button" aria-pressed="false" autocomplete="off">Item</button>
-        <button id="btn-filter-coins" type="button" class="btn btn-secondary" data-toggle="button" aria-pressed="false" autocomplete="off">Coins</button>
+      <div class="form-row">
+        <div class="col-md-4 mb-3">
+          <label for="select-category">Filter by Group</label>
+          <select id="select-group" class="form-control custom-select">
+            <option value="">All</option>
+          </select>
+        </div>
+        <div class="col-md-4 mb-3">
+          <label for="select-category">Filter by Category</label>
+          <select id="select-category" class="form-control custom-select">
+            <option value="">All</option>
+          </select>
+        </div>
       </div>
-        <!--<button id="btn-filter-item-set" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">Item Set</button>
-        <button id="btn-filter-category" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">Category</button>
-        <button id="btn-filter-hidden" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">Hidden</button>
-        <button id="btn-filter-repeatable" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">Repeatable</button>
-        <button id="btn-filter-unlockable" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">Unlockable</button>
-        <button id="btn-filter-daily" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">Daily</button>-->
+      <div class="form-row">
+        <div class="col-md-4">  
+          <div class="form-check form-check-inline">
+            <label>Include Reward</label>
+          </div>
+          <div class="form-check form-check-inline mb-2">
+            <input class="form-check-input" type="checkbox" id="btn-filter-title" value="option1">
+            <label class="form-check-label" for="btn-filter-title">Title</label>
+          </div>
+          <div class="form-check form-check-inline mb-2">
+            <input class="form-check-input" type="checkbox" id="btn-filter-mastery" value="option2">
+            <label class="form-check-label" for="btn-filter-mastery">Mastery</label>
+          </div>
+          <div class="form-check form-check-inline mb-2">
+            <input class="form-check-input" type="checkbox" id="btn-filter-item" value="option3">
+            <label class="form-check-label" for="btn-filter-item">Item</label>
+          </div>
+        </div>
+      </div>
       <hr class="mb-4">
       <table id="achievements" class="table table-striped display nowrap bg-white" style="width:100%">
         <thead>
@@ -74,7 +101,7 @@
             <th>AP Next Tier</th>
             <th>Total Progress</th>
             <th>Remaining AP</th>
-            <th>Description</th>
+            <th>Category</th>
           </tr>
         </thead>
       </table>
@@ -87,6 +114,6 @@
     </p>
   </footer>
   </div>
-<script type="text/javascript" src="vendor.fb415a73438930c5b0a0.js"></script><script type="text/javascript" src="bundle.c0d407871701490b1019.js"></script></body>
+<script type="text/javascript" src="vendor.1be021d3b0edd2e019e2.js"></script><script type="text/javascript" src="bundle.5acbdd4d8d6ec82216c4.js"></script></body>
 
 </html>
