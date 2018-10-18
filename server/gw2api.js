@@ -71,6 +71,23 @@ const getTotalProgress = (achievement, progress) => {
       result = _.round(progress.current / tier.count * 100, 1)
     }
   })
+  // check for repeatable achievement
+  if (achievement.flags.includes('Repeatable')) {
+    // get total AP for doing achievement once
+    let totalAp = 0
+    _.forEach(achievement.tiers, tier => {
+      totalAp += tier.points
+    })
+    // find how many times need for all AP
+    let repeatable = achievement.point_cap / totalAp
+    // calculate total progress
+    if (progress.repeated) {
+      result = _.round(progress.repeated / repeatable * 100, 1)
+    }
+    else {
+      result = 0
+    }
+  }
   return result
 }
 
