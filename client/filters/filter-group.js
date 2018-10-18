@@ -9,6 +9,7 @@ import { COLUMNS } from '../helpers/column-definitions'
 class FilterGroup extends Filter {
   constructor() {
     super()
+    // eslint-disable-next-line
     this.filter = (settings, data, dataIndex) => {
       const groupId = data[COLUMNS.GROUP.INDEX]
 

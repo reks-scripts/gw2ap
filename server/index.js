@@ -41,12 +41,12 @@ const provision = async () => {
   await server.cache.provision({ engine: Memory, name: 'gw2ap' })
 
   await server.start()
-
+  // eslint-disable-next-line
   console.log(`Server running at: ${server.info.uri}`)
 }
 
 process.on('unhandledRejection', (err) => {
-
+  // eslint-disable-next-line
   console.log(err)
   process.exit(1)
 })

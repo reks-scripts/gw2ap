@@ -7,7 +7,8 @@ import { ellipsis } from './ellipsis'
 const wikiLink = (cutoff, wordbreak) => {
 
   const truncate = ellipsis(cutoff, wordbreak)
-
+  
+  // eslint-disable-next-line
   return (d, type, row) => {
     const link = d.split(' ').join('_')
     const text = truncate(d, 'display')

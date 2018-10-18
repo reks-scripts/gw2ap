@@ -10,7 +10,7 @@ import 'datatables.net-bs4/css/dataTables.bootstrap4.css'
 // Load modules
 import $ from 'jquery'
 import Fetch from 'node-fetch'
-import { forEach, values, zipObject } from 'lodash'
+import { forEach } from 'lodash'
 import { COLUMNS } from './helpers/column-definitions'
 
 // Data tables
@@ -45,11 +45,14 @@ import { filterCategory } from './filters/filter-category'
 // APP CODE
 let $dataTable = null
 
+// eslint-disable-next-line
 const API_URL = IS_DEV ? 'http://localhost:3000/' : ''
 
+/* eslint-disable */
 const log = data => {
   console.log(JSON.stringify(data, null, 2))
 }
+/* eslint-enable */
 
 const fetch = async (url, options) => {
   options = options || {}

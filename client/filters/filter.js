@@ -15,7 +15,7 @@ class Filter {
     this.filter = null
     this.buttonGroup = buttonGroup || null
   }
-
+  // eslint-disable-next-line
   action(e) {
     if (this.toggle === false) {
       if (this.buttonGroup) {

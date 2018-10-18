@@ -7,6 +7,7 @@ import { COLUMNS } from '../helpers/column-definitions'
 class FilterNotStarted extends Filter {
   constructor() {
     super(FILTER_BUTTON_GROUPS.PROGRESS)
+    // eslint-disable-next-line
     this.filter = (settings, data, dataIndex) => {
       const totalProgress = parseInt(data[COLUMNS.TOTAL_PROGRESS.INDEX])
       const tierProgress = parseInt(data[COLUMNS.TIER_PROGRESS.INDEX])

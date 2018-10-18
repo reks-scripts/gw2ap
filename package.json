@@ -27,6 +27,7 @@
     "datatables.net-rowreorder-bs4": "^1.2.5",
     "datatables.net-scroller-bs4": "^1.5.1",
     "datatables.net-select-bs4": "^1.2.7",
+    "eslint": "^5.7.0",
     "gasparesganga-jquery-loading-overlay": "^2.1.6",
     "hapi": "^17.6.0",
     "hapi-gate": "^2.1.0",

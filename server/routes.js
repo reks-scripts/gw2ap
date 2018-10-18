@@ -5,7 +5,7 @@
 // Declare internals
 const internals = {}
 
-const routes = internals.routes = module.exports = [
+const routes = internals.routes = [
   {
     method: 'GET',
     path: '/assets/{path*}',
@@ -19,14 +19,14 @@ const routes = internals.routes = module.exports = [
     method: 'GET',
     path: '/favicon.ico',
     handler: function (request, h) {
-        return h.file('./assets/favicon.ico');
+      return h.file('./assets/favicon.ico')
     }
   },
   {
     method: 'GET',
     path: '/browserconfig.xml',
     handler: function (request, h) {
-        return h.file('./assets/browserconfig.xml');
+      return h.file('./assets/browserconfig.xml')
     }
   },
   {
@@ -41,3 +41,5 @@ const routes = internals.routes = module.exports = [
     }
   }
 ]
+
+module.exports = routes

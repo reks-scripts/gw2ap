@@ -10,15 +10,15 @@ const percentageBars = (pShape, cText, cBorder, cBar, cBack, vRound, bType) => {
   vRound = vRound || 0
   bType = bType || 'collapse'
   //Bar templates
-  var styleRule1 = `max-width:100px;margin:0 auto;`
+  var styleRule1 = 'max-width:100px;margin:0 auto;'
   var styleRule2 = `border:2px ${bType} ${cBorder};line-height:1.5;font-size:14px;color:${cText};background:${cBack};position:relative;`
   var styleRule3 = `height:1.5em;line-height:1.5;text-align:center;background-color:${cBar};`
   //Square is default, make template round if pShape == round
   if (pShape == 'round') {
-    styleRule2 += `border-radius:5px;`
-    styleRule3 += `border-top-left-radius:4px;border-bottom-left-radius:4px;`
+    styleRule2 += 'border-radius:5px;'
+    styleRule3 += 'border-top-left-radius:4px;border-bottom-left-radius:4px;'
   }
-
+  // eslint-disable-next-line
   return function (d, type, row) {
     //Remove % if found in the value
     //Round to the given parameter vRound

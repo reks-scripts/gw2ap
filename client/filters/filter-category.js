@@ -9,6 +9,7 @@ import { COLUMNS } from '../helpers/column-definitions'
 class FilterCategory extends Filter {
   constructor() {
     super()
+    // eslint-disable-next-line
     this.filter = (settings, data, dataIndex) => {
       const category = data[COLUMNS.CATEGORY.INDEX]
       try {
@@ -18,7 +19,7 @@ class FilterCategory extends Filter {
         } else {
           return null
         }
-      } catch {
+      } catch (e) {
         return null
       }
     }

@@ -19,9 +19,11 @@ const GW2_API = {
   }
 }
 
+/* eslint-disable */
 const log = data => {
   console.log(JSON.stringify(data, null, 2))
 }
+/* eslint-enable */
 
 const getAuthHeader = apiKey => {
   return { 
@@ -196,6 +198,7 @@ const flattenAchievement = (achievement, progress) => {
   return result
 }
 
+/* eslint-disable */
 const possibleResults = {  
   "types":[  
      "Default",
@@ -221,7 +224,7 @@ const possibleResults = {
      "Coins"
   ]
 }
-
+/* eslint-enable */
 
 const Cache = {}
 
@@ -255,10 +258,12 @@ Cache.getAchievements = async () => {
 
 const API = {}
 
+// eslint-disable-next-line
 API.getGroups = async (request, h) => {
   return request.server.methods.Cache.getAchievementGroups()
 }
 
+// eslint-disable-next-line
 const getCategories = API.getCategories = async (request, h) => {
   const groups = request.server.methods.Cache.getAchievementGroups()
   const categories = request.server.methods.Cache.getAchievementCategories()

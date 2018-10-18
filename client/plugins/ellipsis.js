@@ -9,6 +9,7 @@ const ellipsis = (cutoff, wordbreak, escapeHtml) => {
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
   }
+  // eslint-disable-next-line
   return (d, type, row) => {
     // Order, search and type get the original data
     if (type !== 'display') {

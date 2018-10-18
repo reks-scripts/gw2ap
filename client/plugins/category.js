@@ -5,6 +5,7 @@ import $ from 'jquery'
 
 // DATA TABLES PLUGIN
 const render = () => {
+  // eslint-disable-next-line
   return (d, type, row) => {
     return `<img src="${d.icon}" alt="${d.name}" title="${d.name}" data-type="category" data-category-id="${d.id}" width="32" height="32" />`
   }
@@ -23,7 +24,7 @@ const order = () => {
       } else {
         return null
       }
-    } catch {
+    } catch (e) {
       return null
     }
   })

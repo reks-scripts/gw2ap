@@ -7,8 +7,8 @@ import { COLUMNS } from '../helpers/column-definitions'
 class FilterItem extends Filter {
   constructor() {
     super(FILTER_BUTTON_GROUPS.REWARDS)
+    // eslint-disable-next-line
     this.filter = (settings, data, dataIndex) => {
-      let match = false
       const rewards = data[COLUMNS.REWARDS.INDEX]
       if (rewards && rewards.length) {
         return rewards.includes('Item')

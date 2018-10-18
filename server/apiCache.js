@@ -1,14 +1,15 @@
-'use strict';
+'use strict'
 
 // Load modules
 const { Cache, API } = require('./gw2api')
 
 // Declare internals
-const internals = {}
+const internals = {}  // eslint-disable-line
 
 const ApiCache = {
   name: 'ApiCache',
   version: '1.0.0',
+  // eslint-disable-next-line
   register: async function (server, options) {
 
     server.method('Cache.getAchievementGroups', Cache.getAchievementGroups, {
