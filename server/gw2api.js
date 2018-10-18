@@ -112,6 +112,21 @@ const getRemainingAP = (achievement, progress) => {
       result += tier.points
     }
   })
+  // check for repeatable achievement
+  if (achievement.flags.includes('Repeatable')) {
+    // get total AP for doing achievement once
+    let totalAp = 0
+    _.forEach(achievement.tiers, tier => {
+      totalAp += tier.points
+    })
+    // calculate how many AP player has earned by repeating
+    let repeatAp = 0
+    if (progress.repeated) {
+      repeatAp = totalAp * progress.repeated
+    }
+    // update result with remaining AP
+    result = achievement.point_cap - repeatAp
+  }
   return result
 }
 
