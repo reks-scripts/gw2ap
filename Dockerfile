@@ -13,6 +13,11 @@ RUN npm install
 # Bundle app source
 COPY . .
 
+# Make build folder
+RUN mkdir dist
+# Build
+RUN npm run build
+
 EXPOSE 3000
 
-CMD [ "npm", "start" ]
+ENTRYPOINT [ "npm", "start" ]
