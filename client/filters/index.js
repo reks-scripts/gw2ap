@@ -6,6 +6,8 @@ import { filterGroup } from './filter-group'
 import { filterInProgress } from './filter-in-progress'
 import { filterItem } from './filter-reward-item'
 import { filterMastery } from './filter-reward-mastery'
+import { filterMinNextTier } from './filter-min-next-tier'
+import { filterMinRemaining } from './filter-min-remaining'
 import { filterNotStarted } from './filter-not-started'
 import { filterTitle } from './filter-reward-title'
 
@@ -16,6 +18,8 @@ const Filters = {
   filterInProgress,
   filterItem,
   filterMastery,
+  filterMinNextTier,
+  filterMinRemaining,
   filterNotStarted,
   filterTitle
 }

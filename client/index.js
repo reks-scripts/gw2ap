@@ -98,6 +98,7 @@ const initDataTable = data => {
 
   $dataTable = $('#achievements').DataTable({
     data: data,
+    dom: '<"clearfix"fl><t><ip>',
     pagingType: 'full',
     scrollCollapse: true,
     select: true,
@@ -188,6 +189,14 @@ const initCategorySelect = categories => {
   })
 }
 
+const toggleAdditionalFilters = e => {
+  if ($(e.currentTarget).hasClass('collapsed')) {
+    $(e.currentTarget).text('Hide additional filters')
+  } else {
+    $(e.currentTarget).text('Show additional filters')
+  }
+}
+
 const bindEvents = () => {
   window.addEventListener('resize', () => {
     if ($dataTable) {
@@ -201,6 +210,10 @@ const bindEvents = () => {
   $('#btn-filter-title').on('click', Filters.filterTitle)
   $('#btn-filter-mastery').on('click', Filters.filterMastery)
   $('#btn-filter-item').on('click', Filters.filterItem)
+  $('#filter-min-next-tier').on('blur change keyup', Filters.filterMinNextTier)
+  $('#filter-min-remaining').on('blur change keyup', Filters.filterMinRemaining)
+
+  $('#btn-additional-filters').on('click', toggleAdditionalFilters)
 
   $('form').on('submit', async e => {
     e.preventDefault()

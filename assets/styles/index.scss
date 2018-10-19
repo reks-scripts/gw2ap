@@ -7,6 +7,16 @@ html {
   box-sizing: inherit;
 }
 
+.dataTables_filter,
+.dataTables_info {
+  float: left;
+}
+
+.dataTables_length,
+.dataTables_paginate {
+  float: right;
+}
+
 .pagination {
   margin: .425em 0 2px!important;
 }

@@ -50,45 +50,57 @@
     </div>
     <div class="col-md-12 order-md-1">
       <div class="form-row">
-        <div id="filter-progress" class="col-md-4 btn-group mb-3" role="group" aria-label="Progress">
-          <button id="btn-filter-in-progress" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false"
-            autocomplete="off">In Progress</button>
-          <button id="btn-filter-not-started" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false"
-            autocomplete="off">Not Started</button>
-          <button id="btn-filter-complete" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false"
-            autocomplete="off">Completed</button>
+        <div class="col-md-6 mb-3">
+          <div id="filter-progress" class="btn-group" role="group" aria-label="Progress">
+            <button id="btn-filter-in-progress" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false"
+              autocomplete="off">In Progress</button>
+            <button id="btn-filter-not-started" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false"
+              autocomplete="off">Not Started</button>
+            <button id="btn-filter-complete" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false"
+              autocomplete="off">Completed</button>
+          </div>
+          <button id="btn-additional-filters" class="btn btn-link collapsed" data-toggle="collapse" href="#additional-filters" role="button" aria-expanded="false"
+            aria-controls="additional-filters">Show additional filters</button>
         </div>
       </div>
-      <div class="form-row">
-        <div class="col-md-4 mb-3">
-          <label for="select-category">Filter by Group</label>
-          <select id="select-group" class="form-control custom-select">
-            <option value="">All</option>
-          </select>
+      <div id="additional-filters" class="collapse">
+        <div class="form-row">
+          <div class="col-md-4 mb-4 mt-2">
+            <label for="select-category" class="text-dark">Filter by Group</label>
+            <select id="select-group" class="form-control custom-select">
+              <option value="">All</option>
+            </select>
+          </div>
+          <div class="col-md-4 mb-4 mt-2">
+            <label for="select-category" class="text-dark">Filter by Category</label>
+            <select id="select-category" class="form-control custom-select">
+              <option value="">All</option>
+            </select>
+          </div>
         </div>
-        <div class="col-md-4 mb-3">
-          <label for="select-category">Filter by Category</label>
-          <select id="select-category" class="form-control custom-select">
-            <option value="">All</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="col-md-4">  
-          <div class="form-check form-check-inline">
-            <label>Include Reward</label>
+        <div class="form-row">
+          <div class="form-group form-inline col-md-5 mb-2">
+            <label for="filter-min-next-tier" class="text-dark">AP Next Tier &ge; </label>
+            <input id="filter-min-next-tier" class="form-control form-control-sm ml-2" type="number" value="0" min="0"
+              max="50" />
+            <label for="filter-min-remaining" class="text-dark ml-4">Remaining AP &ge; </label>
+            <input id="filter-min-remaining" class="form-control form-control-sm ml-2" type="number" value="0" min="0"
+              max="50" />
           </div>
-          <div class="form-check form-check-inline mb-2">
-            <input class="form-check-input" type="checkbox" id="btn-filter-title" value="option1">
-            <label class="form-check-label" for="btn-filter-title">Title</label>
-          </div>
-          <div class="form-check form-check-inline mb-2">
-            <input class="form-check-input" type="checkbox" id="btn-filter-mastery" value="option2">
-            <label class="form-check-label" for="btn-filter-mastery">Mastery</label>
-          </div>
-          <div class="form-check form-check-inline mb-2">
-            <input class="form-check-input" type="checkbox" id="btn-filter-item" value="option3">
-            <label class="form-check-label" for="btn-filter-item">Item</label>
+          <div class="form-group form-inline col-md-4 mb-2">
+            <label class="text-dark mr-3">Includes Reward</label>
+            <div class="form-check form-check-inline">
+              <input id="btn-filter-title" class="form-check-input" type="checkbox" value="title">
+              <label for="btn-filter-title" class="form-check-label text-dark">Title</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input id="btn-filter-mastery" class="form-check-input" type="checkbox" value="mastery">
+              <label for="btn-filter-mastery" class="form-check-label text-dark">Mastery</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input id="btn-filter-item" class="form-check-input" type="checkbox" value="item">
+              <label for="btn-filter-item" class="form-check-label text-dark">Item</label>
+            </div>
           </div>
         </div>
       </div>
