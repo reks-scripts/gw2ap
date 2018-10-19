@@ -111,7 +111,7 @@ const initDataTable = data => {
     pagingType: 'full',
     scrollCollapse: true,
     select: true,
-    stateSave: true,
+    stateSave: false,
     responsive: true,
     language: {
       infoFiltered: ''
