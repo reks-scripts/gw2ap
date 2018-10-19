@@ -1,15 +1,15 @@
-const path = require('path');
-const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require('path')
+const webpack = require('webpack')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 // Is the current build a development build
-const IS_DEV = (process.env.NODE_ENV === 'dev');
+const IS_DEV = (process.env.NODE_ENV === 'development')
 
-const dirNode = 'node_modules';
-const dirApp = path.join(__dirname, 'client');
-const dirAssets = path.join(__dirname, 'assets');
+const dirNode = 'node_modules'
+const dirApp = path.join(__dirname, 'client')
+const dirAssets = path.join(__dirname, 'assets')
 
-const appHtmlTitle = 'GW2AP - Quick and easy filtering and sorting of your Guild Wars 2 achievements';
+const appHtmlTitle = 'GW2AP - Quick and easy filtering and sorting of your Guild Wars 2 achievements'
 
 /**
  * Webpack Configuration
@@ -94,4 +94,4 @@ module.exports = {
       }
     ]
   }
-};
+}

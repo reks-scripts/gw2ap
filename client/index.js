@@ -27,20 +27,10 @@ import 'datatables.net-scroller-bs4'
 import 'datatables.net-select-bs4'
 
 // Data tables plugins
-import { ellipsis } from './plugins/ellipsis'
-import { wikiLink } from './plugins/wiki-link'
-import * as Category from './plugins/category'
-import { percentageBars } from './plugins/percentage-bars'
+import { Plugins } from './plugins'
 
 // Data tables filters
-import { filterComplete } from './filters/filter-complete'
-import { filterInProgress } from './filters/filter-in-progress'
-import { filterNotStarted } from './filters/filter-not-started'
-import { filterItem } from './filters/filter-reward-item'
-import { filterMastery } from './filters/filter-reward-mastery'
-import { filterTitle } from './filters/filter-reward-title'
-import { filterGroup } from './filters/filter-group'
-import { filterCategory } from './filters/filter-category'
+import { Filters } from './filters'
 
 // APP CODE
 let $dataTable = null
@@ -98,12 +88,12 @@ const updateApiKey = (apiKey, remember) => {
 
 const initDataTable = data => {
   // attach custom renderers
-  $.fn.dataTable.render.ellipsis = ellipsis
-  $.fn.dataTable.render.wikiLink = wikiLink
-  $.fn.dataTable.render.category = Category.render
-  $.fn.dataTable.render.percentageBars = percentageBars
+  $.fn.dataTable.render.ellipsis = Plugins.ellipsis
+  $.fn.dataTable.render.wikiLink = Plugins.wikiLink
+  $.fn.dataTable.render.category = Plugins.Category.render
+  $.fn.dataTable.render.percentageBars = Plugins.percentageBars
   // attach custom orderers
-  $.fn.dataTable.category = Category.order
+  $.fn.dataTable.category = Plugins.Category.order
   $.fn.dataTable.category()
 
   $dataTable = $('#achievements').DataTable({
@@ -185,7 +175,7 @@ const initGroupSelect = groups => {
     $('#select-group').append(`<option value="${group.id}">${group.name}</option>`)
   })
   $('#select-group').on('change', e => {
-    filterGroup($(e.currentTarget).val())
+    Filters.filterGroup($(e.currentTarget).val())
   })
 }
 
@@ -194,7 +184,7 @@ const initCategorySelect = categories => {
     $('#select-category').append(`<option value="${category.id}" data-group-id="${category.group.id}" style="display:none;">${category.name}</option>`)
   })
   $('#select-category').on('change', e => {
-    filterCategory($(e.currentTarget).val())
+    Filters.filterCategory($(e.currentTarget).val())
   })
 }
 
@@ -205,12 +195,12 @@ const bindEvents = () => {
     }
   })
 
-  $('#btn-filter-in-progress').on('click', filterInProgress)
-  $('#btn-filter-not-started').on('click', filterNotStarted)
-  $('#btn-filter-complete').on('click', filterComplete)
-  $('#btn-filter-title').on('click', filterTitle)
-  $('#btn-filter-mastery').on('click', filterMastery)
-  $('#btn-filter-item').on('click', filterItem)
+  $('#btn-filter-in-progress').on('click', Filters.filterInProgress)
+  $('#btn-filter-not-started').on('click', Filters.filterNotStarted)
+  $('#btn-filter-complete').on('click', Filters.filterComplete)
+  $('#btn-filter-title').on('click', Filters.filterTitle)
+  $('#btn-filter-mastery').on('click', Filters.filterMastery)
+  $('#btn-filter-item').on('click', Filters.filterItem)
 
   $('form').on('submit', async e => {
     e.preventDefault()

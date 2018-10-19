@@ -17,10 +17,10 @@ class FilterCategory extends Filter {
         if (parseInt(categoryId) === parseInt(this.filterCategoryId)) {
           return true
         } else {
-          return null
+          return false
         }
       } catch (e) {
-        return null
+        return false
       }
     }
     this.active = false

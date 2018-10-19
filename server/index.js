@@ -7,7 +7,7 @@ const Inert = require('inert')
 const HapiGate = require('hapi-gate')
 const Memory = require('catbox-memory')
 const Routes = require('./routes')
-const ApiCacheRoutes = require('./apiCache')
+const GW2API = require('./gw2api')
 
 // Declare internals
 const server = Hapi.server({
@@ -31,7 +31,7 @@ const provision = async () => {
     }
   })
   await server.register({
-    plugin: ApiCacheRoutes
+    plugin: GW2API
   })
 
   // routes
