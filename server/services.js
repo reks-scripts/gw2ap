@@ -63,39 +63,46 @@ const getByIds = async (what, ids, batchSize) => {
   return result
 }
 
+const repeatable = achievement => {
+  return _.round(achievement.point_cap / achievement.tiers[0].points)
+}
+
+const isDone = (achievement, progress) => {
+  if (progress.done) {
+    return true
+  }
+  else if (achievement.flags.includes('Repeatable')) {
+    if (progress.repeated && progress.repeated >= repeatable(achievement)) {
+      return true
+    }
+  }
+  return false
+}
+
 const getTotalProgress = (achievement, progress) => {
   let result = 0
-  if (progress.done) {
+  if (isDone(achievement, progress)) {
     return 100
+  }
+  if (achievement.flags.includes('Repeatable')) {
+    if (progress.repeated) {
+      return _.round(progress.repeated / repeatable(achievement) * 100, 1)
+    } else {
+      return 0
+    }
   }
   _.forEach(achievement.tiers, tier => {
     if (tier.count > progress.current ) {
       result = _.round(progress.current / tier.count * 100, 1)
     }
   })
-  // check for repeatable achievement
-  if (achievement.flags.includes('Repeatable')) {
-    // get total AP for doing achievement once
-    let totalAp = 0
-    _.forEach(achievement.tiers, tier => {
-      totalAp += tier.points
-    })
-    // find how many times need for all AP
-    let repeatable = achievement.point_cap / totalAp
-    // calculate total progress
-    if (progress.repeated) {
-      result = _.round(progress.repeated / repeatable * 100, 1)
-    }
-    else {
-      result = 0
-    }
-  }
+
   return result
 }
 
 const getTierProgress = (achievement, progress) => {
   let result = 0
-  if (progress.done) {
+  if (isDone(achievement, progress)) {
     return 100
   }
   _.forEach(achievement.tiers, tier => {
@@ -109,8 +116,8 @@ const getTierProgress = (achievement, progress) => {
 
 const getNextTierAP = (achievement, progress) => {
   let result = 0
-  if (progress.done) {
-    return result
+  if (isDone(achievement, progress)) {
+    return 0
   }
   _.forEach(achievement.tiers, tier => {
     if (tier.count > progress.current ) {
@@ -123,29 +130,22 @@ const getNextTierAP = (achievement, progress) => {
 
 const getRemainingAP = (achievement, progress) => {
   let result = 0
-  if (progress.done) {
-    return result
+  if (isDone(achievement, progress)) {
+    return 0
+  }
+  if (achievement.flags.includes('Repeatable')) {
+    if (progress.repeated) {
+      return achievement.point_cap - progress.repeated * achievement.tiers[0].points
+    } else {
+      return achievement.point_cap
+    }
   }
   _.forEach(achievement.tiers, tier => {
     if (tier.count > progress.current ) {
       result += tier.points
     }
   })
-  // check for repeatable achievement
-  if (achievement.flags.includes('Repeatable')) {
-    // get total AP for doing achievement once
-    let totalAp = 0
-    _.forEach(achievement.tiers, tier => {
-      totalAp += tier.points
-    })
-    // calculate how many AP player has earned by repeating
-    let repeatAp = 0
-    if (progress.repeated) {
-      repeatAp = totalAp * progress.repeated
-    }
-    // update result with remaining AP
-    result = achievement.point_cap - repeatAp
-  }
+
   return result
 }
 
@@ -182,19 +182,19 @@ const getAchievementProgressByID = (myAchievements, id) => {
 
 const flattenAchievement = (achievement, progress) => {
   const result = {}
-  result.tierProgress = getTierProgress(achievement, progress)
   result.name = achievement.name
-  result.nextTierAP = getNextTierAP(achievement, progress)
-  result.totalProgress = getTotalProgress(achievement, progress)
-  result.remainingAP = getRemainingAP(achievement, progress)
-  result.rewards = getRewards(achievement)
-  result.flags = getFlags(achievement)
   result.description = achievement.description
   result.requirement = achievement.requirement
   result.category = achievement.category
   result.group = achievement.group
   result.type = achievement.type
   result.id = achievement.id
+  result.totalProgress = getTotalProgress(achievement, progress)
+  result.remainingAP = getRemainingAP(achievement, progress)
+  result.tierProgress = getTierProgress(achievement, progress)
+  result.nextTierAP = getNextTierAP(achievement, progress)
+  result.rewards = getRewards(achievement)
+  result.flags = getFlags(achievement)
   return result
 }
 
@@ -264,7 +264,7 @@ const getCategories = API.getCategories = async (request, h) => {
   return results
 }
 
-const getAchievementsWithCategories = async (request, h) => {
+const getAchievementsWithCategories = API.getAchievementsWithCategories = async (request, h) => {
   const categories = getCategories(request, h)
   const achievements = request.server.methods.Cache.getAchievements()  
 

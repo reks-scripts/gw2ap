@@ -44,6 +44,11 @@ const GW2API = {
       path: '/api/achievements/{apiKey}',
       handler: API.processAchievements
     })
+    server.route({
+      method: 'GET',
+      path: '/api/achievements',
+      handler: API.getAchievementsWithCategories
+    })
   }
 }
 
