@@ -34,7 +34,9 @@ class FilterMinRemaining extends Filter {
       $(e.target).val('0')
     }
 
-    if (this.active) {
+    this.minRemaining = parseInt($(e.target).val())
+
+    if (this.active && this.minRemaining === 0) {
       forEach($.fn.dataTable.ext.search, (value, key) => {
         if (value === this.filter) {
           $.fn.dataTable.ext.search.splice(key, 1)
@@ -43,10 +45,7 @@ class FilterMinRemaining extends Filter {
       })
       this.active = false
     } 
-
-    this.minRemaining = parseInt($(e.target).val())
-
-    if (this.active === false) {
+    else if (!this.active && this.minRemaining !== '') {
       $.fn.dataTable.ext.search.push(this.filter)
       this.active = true
     }

@@ -64,17 +64,18 @@ const getByIds = async (what, ids, batchSize) => {
 }
 
 const repeatable = achievement => {
-  return _.round(achievement.point_cap / achievement.tiers[0].points)
+  if (achievement.flags.includes('Repeatable')) {
+    return _.round(achievement.point_cap / achievement.tiers[0].points)
+  }
+  return 0
 }
 
 const isDone = (achievement, progress) => {
   if (progress.done) {
     return true
   }
-  else if (achievement.flags.includes('Repeatable')) {
-    if (progress.repeated && progress.repeated >= repeatable(achievement)) {
-      return true
-    }
+  if (progress.repeated && progress.repeated >= repeatable(achievement)) {
+    return true
   }
   return false
 }
@@ -84,7 +85,7 @@ const getTotalProgress = (achievement, progress) => {
   if (isDone(achievement, progress)) {
     return 100
   }
-  if (achievement.flags.includes('Repeatable')) {
+  if (repeatable(achievement)) {
     if (progress.repeated) {
       return _.round(progress.repeated / repeatable(achievement) * 100, 1)
     } else {
@@ -108,7 +109,7 @@ const getTierProgress = (achievement, progress) => {
   _.forEach(achievement.tiers, tier => {
     if (tier.count > progress.current ) {
       result = _.round(progress.current / tier.count * 100, 1)
-      return false
+      return false // break
     }
   })
   return result
@@ -120,9 +121,9 @@ const getNextTierAP = (achievement, progress) => {
     return 0
   }
   _.forEach(achievement.tiers, tier => {
-    if (tier.count > progress.current ) {
+    if (!progress.current || progress.current && tier.count > progress.current) {
       result = tier.points
-      return false
+      return false // break
     }
   })
   return result
@@ -133,7 +134,7 @@ const getRemainingAP = (achievement, progress) => {
   if (isDone(achievement, progress)) {
     return 0
   }
-  if (achievement.flags.includes('Repeatable')) {
+  if (repeatable(achievement)) {
     if (progress.repeated) {
       return achievement.point_cap - progress.repeated * achievement.tiers[0].points
     } else {
@@ -141,7 +142,7 @@ const getRemainingAP = (achievement, progress) => {
     }
   }
   _.forEach(achievement.tiers, tier => {
-    if (tier.count > progress.current ) {
+    if (!progress.current || progress.current && tier.count > progress.current) {
       result += tier.points
     }
   })
@@ -174,7 +175,7 @@ const getAchievementProgressByID = (myAchievements, id) => {
   _.forEach(myAchievements, myAchievement => {
     if (myAchievement.id === id) {
       result = myAchievement
-      return false
+      return false // break
     }
   })
   return result
@@ -208,7 +209,7 @@ Cache.getAchievementGroups = async () => {
   _.forEach(groups, (group, key) => {
     if (group.id === GW2_API.DAILY_GROUP_ID) {
       groups.splice(key, 1)
-      return false
+      return false // break
     }
   })
   return _.orderBy(groups, group => {
@@ -256,7 +257,7 @@ const getCategories = API.getCategories = async (request, h) => {
             order: group.order
           }
           results.push(result)
-          return false
+          return false // break
         }
       })
     })
@@ -285,7 +286,7 @@ const getAchievementsWithCategories = API.getAchievementsWithCategories = async 
           }
           result.group = category.group
           results.push(result)
-          return false
+          return false // break
         }
       })
     })
