@@ -1,6 +1,7 @@
 'use strict'
 
 // Load modules
+const Boom = require('boom')
 const Fetch = require('node-fetch')
 const _ = require('lodash')
 
@@ -34,7 +35,13 @@ const getAuthHeader = apiKey => {
 const fetch = async (url, options) => {
   options = options || {}
   const result = await Fetch(url, options)
-  return result.json()
+  if (result.ok) {
+    return result.json()
+  }
+  else {
+    const error = await result.json()
+    throw Boom.badRequest(error.text || 'Bad Request')
+  }
 }
 
 const getByIds = async (what, ids, batchSize) => {
@@ -170,6 +177,14 @@ const getFlags = achievement => {
   return result
 }
 
+const getCount = achievement => {
+  let result = 1
+  _.forEach(achievement.tiers, tier => {
+    result = tier.count
+  })
+  return result
+}
+
 const getAchievementProgressByID = (myAchievements, id) => {
   let result = {}
   _.forEach(myAchievements, myAchievement => {
@@ -196,6 +211,7 @@ const flattenAchievement = (achievement, progress) => {
   result.nextTierAP = getNextTierAP(achievement, progress)
   result.rewards = getRewards(achievement)
   result.flags = getFlags(achievement)
+  result.count = getCount(achievement)
   return result
 }
 
@@ -220,7 +236,9 @@ Cache.getAchievementGroups = async () => {
 Cache.getAchievementCategories = async () => {
   const categoryIds = await fetch(GW2_API.URLS.ACHIEVEMENTS_CATEGORIES)
   const categories = await getByIds(GW2_API.URLS.ACHIEVEMENTS_CATEGORIES, categoryIds)
-  return categories
+  return _.orderBy(categories, category => {
+    return category.order 
+  })
 }
 
 Cache.getAchievements = async () => {

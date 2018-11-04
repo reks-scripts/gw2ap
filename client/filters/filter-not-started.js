@@ -2,7 +2,7 @@
 
 // Load modules
 import { Filter, FILTER_BUTTON_GROUPS } from './filter'
-import { COLUMNS } from '../helpers/column-definitions'
+import { COLUMNS } from '../../config/column-definitions'
 
 class FilterNotStarted extends Filter {
   constructor() {

@@ -40,6 +40,7 @@
         </div>
         <hr class="mb-4">
         <button class="btn btn-primary btn-lg btn-block" type="submit">Process My Achievements</button>
+        <div id="error" class="alert alert-danger mt-4" role="alert" style="display:none"></div>
       </form>
     </div>
   </div>
@@ -59,8 +60,8 @@
             <button id="btn-filter-complete" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false"
               autocomplete="off">Completed</button>
           </div>
-          <button id="btn-additional-filters" class="btn btn-link collapsed" data-toggle="collapse" href="#additional-filters" role="button" aria-expanded="false"
-            aria-controls="additional-filters">Show additional filters</button>
+          <button id="btn-additional-filters" class="btn btn-link collapsed" data-toggle="collapse" href="#additional-filters"
+            role="button" aria-expanded="false" aria-controls="additional-filters">Show additional filters</button>
         </div>
       </div>
       <div id="additional-filters" class="collapse">
@@ -79,7 +80,7 @@
           </div>
         </div>
         <div class="form-row">
-          <div class="form-group form-inline col-md-5 mb-2">
+          <div class="form-group form-inline col-md-5 mb-3">
             <label for="filter-min-next-tier" class="text-dark">AP Next Tier &ge; </label>
             <input id="filter-min-next-tier" class="form-control form-control-sm ml-2" type="number" value="0" min="0"
               max="50" />
@@ -87,37 +88,46 @@
             <input id="filter-min-remaining" class="form-control form-control-sm ml-2" type="number" value="0" min="0"
               max="50" />
           </div>
-          <div class="form-group form-inline col-md-4 mb-2">
-            <label class="text-dark mr-3">Includes Reward</label>
-            <div class="form-check form-check-inline">
-              <input id="btn-filter-title" class="form-check-input" type="checkbox" value="title">
-              <label for="btn-filter-title" class="form-check-label text-dark">Title</label>
-            </div>
-            <div class="form-check form-check-inline">
-              <input id="btn-filter-mastery" class="form-check-input" type="checkbox" value="mastery">
-              <label for="btn-filter-mastery" class="form-check-label text-dark">Mastery</label>
-            </div>
-            <div class="form-check form-check-inline">
-              <input id="btn-filter-item" class="form-check-input" type="checkbox" value="item">
-              <label for="btn-filter-item" class="form-check-label text-dark">Item</label>
-            </div>
+          <div class="form-group form-inline col-md-4 mb-3">
+            <label for="filter-count" class="text-dark mr-3">Objective Count </label>
+            <select class="custom-select custom-select-sm" id="filter-objective-logic">
+              <option value="gte" selected>&ge;</option>
+              <option value="lte">&le;</option>
+            </select>
+            <input id="filter-objective-count" class="form-control form-control-sm" type="number" value="0" min="0" max="100000" />
+          </div>
+        </div>
+        <div class="form-group form-inline mb-2">
+          <label class="text-dark mr-3">Includes Reward</label>
+          <div class="form-check form-check-inline">
+            <input id="btn-filter-title" class="form-check-input" type="checkbox" value="title">
+            <label for="btn-filter-title" class="form-check-label text-dark">Title</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input id="btn-filter-mastery" class="form-check-input" type="checkbox" value="mastery">
+            <label for="btn-filter-mastery" class="form-check-label text-dark">Mastery</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input id="btn-filter-item" class="form-check-input" type="checkbox" value="item">
+            <label for="btn-filter-item" class="form-check-label text-dark">Item</label>
           </div>
         </div>
       </div>
-      <hr class="mb-4">
-      <table id="achievements" class="table table-striped display nowrap bg-white" style="width:100%">
-        <thead>
-          <tr>
-            <th>Tier Progress</th>
-            <th>Name</th>
-            <th>AP Next Tier</th>
-            <th>Total Progress</th>
-            <th>Remaining AP</th>
-            <th>Category</th>
-          </tr>
-        </thead>
-      </table>
     </div>
+    <hr class="mb-4">
+    <table id="achievements" class="table table-striped display nowrap bg-white" style="width:100%">
+      <thead>
+        <tr>
+          <th>Tier Progress</th>
+          <th>Name</th>
+          <th>AP Next Tier</th>
+          <th>Total Progress</th>
+          <th>Remaining AP</th>
+          <th>Category</th>
+        </tr>
+      </thead>
+    </table>
+  </div>
   </div>
 
   <footer class="my-3 pt-5 text-muted text-center text-small">

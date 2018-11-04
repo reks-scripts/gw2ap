@@ -49,9 +49,13 @@ const COLUMNS = {
     DATA: 'type',
     INDEX: 11
   },
+  COUNT: {
+    DATA: 'count',
+    INDEX: 12
+  },
   ID: {
     DATA: 'id',
-    INDEX: 12
+    INDEX: 13
   }
 }
 

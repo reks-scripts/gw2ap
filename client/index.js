@@ -10,8 +10,9 @@ import 'datatables.net-bs4/css/dataTables.bootstrap4.css'
 // Load modules
 import $ from 'jquery'
 import Fetch from 'node-fetch'
+import Boom from 'boom'
 import { forEach } from 'lodash'
-import { COLUMNS } from './helpers/column-definitions'
+import { COLUMNS } from '../config/column-definitions'
 
 // Data tables
 import 'datatables.net-bs4'
@@ -47,7 +48,13 @@ const log = data => {
 const fetch = async (url, options) => {
   options = options || {}
   const result = await Fetch(url, options)
-  return result.json()
+  if (result.ok) {
+    return result.json()
+  }
+  else {
+    const error = await result.json()
+    throw Boom.badRequest(error.message || 'Bad Request')
+  }
 }
 
 const getGroups = async () => {
@@ -131,6 +138,7 @@ const initDataTable = data => {
           COLUMNS.GROUP.INDEX,
           COLUMNS.FLAGS.INDEX,
           COLUMNS.TYPE.INDEX,
+          COLUMNS.COUNT.INDEX,
           COLUMNS.ID.INDEX
         ],
         visible: false
@@ -165,6 +173,7 @@ const initDataTable = data => {
       { data: COLUMNS.GROUP.DATA },
       { data: COLUMNS.FLAGS.DATA },
       { data: COLUMNS.TYPE.DATA },
+      { data: COLUMNS.COUNT.DATA },
       { data: COLUMNS.ID.DATA }
     ]
   })
@@ -212,31 +221,44 @@ const bindEvents = () => {
   $('#btn-filter-item').on('click', Filters.filterItem)
   $('#filter-min-next-tier').on('blur change keyup', Filters.filterMinNextTier)
   $('#filter-min-remaining').on('blur change keyup', Filters.filterMinRemaining)
+  $('#filter-objective-logic').on('change', Filters.filterObjectiveCount)
+  $('#filter-objective-count').on('blur change keyup', Filters.filterObjectiveCount)
 
   $('#btn-additional-filters').on('click', toggleAdditionalFilters)
 
   $('form').on('submit', async e => {
     e.preventDefault()
     $.LoadingOverlay('show')
+    $('#error').hide().empty()
 
     const apiKey = $('#api-key').val()
     const remember = $('#remember-api-key').is(':checked')
 
     updateApiKey(apiKey, remember)
     
-    const achievements = await getAchievements(apiKey)
-    if (!$dataTable) {
-      initDataTable(achievements)
-    }
+    try {
+      const achievements = await getAchievements(apiKey)
 
-    const groups = await getGroups()
-    initGroupSelect(groups)
-    const categories = await getCategories()
-    initCategorySelect(categories)
-    
-    $('#btn-filter-in-progress').click()
-    $('#page-1').hide()
-    $('#page-2').show()
+      if (!$dataTable) {
+        initDataTable(achievements)
+      }
+
+      const groups = await getGroups()
+      initGroupSelect(groups)
+      const categories = await getCategories()
+      initCategorySelect(categories)
+      
+      $('#btn-filter-in-progress').click()
+      $('#page-1').hide()
+      $('#page-2').show()
+    } 
+    catch (e) {
+      let error = e.output.payload.error || 'Bad Request'
+      if (e.output.payload.message) {
+        error = `${error}: ${e.output.payload.message}`
+      }
+      $('#error').append(`${error}`).show()
+    }
     $.LoadingOverlay('hide')
   })
 }

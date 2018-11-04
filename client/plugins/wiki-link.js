@@ -10,7 +10,9 @@ const wikiLink = (cutoff, wordbreak) => {
   
   // eslint-disable-next-line
   return (d, type, row) => {
-    const link = d.split(' ').join('_')
+    let link = d.split(' ').join('_')
+    link = link.replace(/[[\]{}|<>#"]/g, '')
+    link = encodeURI(link)
     const text = truncate(d, 'display')
 
     return `<a href="https://wiki.guildwars2.com/wiki/${link}" target="_blank">${text}</a>`

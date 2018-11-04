@@ -4,7 +4,7 @@
 import $ from 'jquery'
 import { forEach } from 'lodash'
 import { Filter } from './filter'
-import { COLUMNS } from '../helpers/column-definitions'
+import { COLUMNS } from '../../config/column-definitions'
 
 class FilterMinRemaining extends Filter {
   constructor() {

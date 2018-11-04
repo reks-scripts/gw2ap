@@ -6,20 +6,24 @@ import { forEach } from 'lodash'
 import { Filter } from './filter'
 import { COLUMNS } from '../../config/column-definitions'
 
-class FilterMinNextTier extends Filter {
+class FilterObjectiveCount extends Filter {
   constructor() {
     super()
     // eslint-disable-next-line
     this.filter = (settings, data, dataIndex) => {
-      const nextTierAp = parseInt(data[COLUMNS.NEXT_TIER_AP.INDEX])
-      if (nextTierAp >= this.minNextTier) {
+      const count = parseInt(data[COLUMNS.COUNT.INDEX])
+      if (this.objectiveLogic === 'gte' && count >= this.objectiveCount) {
+        return true
+      }
+      else if (this.objectiveLogic === 'lte' && count <= this.objectiveCount) {
         return true
       }
       else {
         return false
       }
     }
-    this.minNextTier = 0
+    this.objectiveCount = 0
+    this.objectiveLogic = 'gte'
     this.active = false
   }
   // override base class action()
@@ -27,16 +31,17 @@ class FilterMinNextTier extends Filter {
     if (!parseInt(e.key)) {
       e.preventDefault()
     }
-    if (parseInt($(e.target).val()) > 50) {
-      $(e.target).val('50')
+    if (parseInt($(e.target).val()) > 100000) {
+      $(e.target).val('100000')
     }
     if (parseInt($(e.target).val()) < 0) {
       $(e.target).val('0')
     }
 
-    this.minNextTier = parseInt($(e.target).val())
+    this.objectiveCount = parseInt($('#filter-objective-count').val())
+    this.objectiveLogic = $('#filter-objective-logic').val()
 
-    if (this.active && this.minNextTier === 0) {
+    if (this.active && this.objectiveCount === 0) {
       forEach($.fn.dataTable.ext.search, (value, key) => {
         if (value === this.filter) {
           $.fn.dataTable.ext.search.splice(key, 1)
@@ -45,7 +50,7 @@ class FilterMinNextTier extends Filter {
       })
       this.active = false
     } 
-    else if (!this.active && this.minNextTier !== '') {
+    else if (!this.active && this.objectiveCount !== '') {
       $.fn.dataTable.ext.search.push(this.filter)
       this.active = true
     }
@@ -54,6 +59,6 @@ class FilterMinNextTier extends Filter {
   }
 }
 
-const _filterMinNextTier = new FilterMinNextTier()
-const filterMinNextTier = _filterMinNextTier.action.bind(_filterMinNextTier)
-export { filterMinNextTier }
+const _filterObjectiveCount = new FilterObjectiveCount()
+const filterObjectiveCount = _filterObjectiveCount.action.bind(_filterObjectiveCount)
+export { filterObjectiveCount }
