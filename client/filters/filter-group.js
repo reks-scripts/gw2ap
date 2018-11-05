@@ -2,7 +2,6 @@
 
 // Load modules
 import $ from 'jquery'
-import { forEach } from 'lodash'
 import { Filter } from './filter'
 import { COLUMNS } from '../../config/column-definitions'
 
@@ -13,7 +12,7 @@ class FilterGroup extends Filter {
     this.filter = (settings, data, dataIndex) => {
       const groupId = data[COLUMNS.GROUP.INDEX]
 
-      if (this.filterGroupId === groupId) {
+      if (this.filterGroups.includes(groupId)) {
         return true
       }
       else {
@@ -24,40 +23,10 @@ class FilterGroup extends Filter {
   }
   // override base class action()
   action(e) {
-    this.filterGroupId = e
-    if (this.active && this.filterGroupId === '') {
-      forEach($.fn.dataTable.ext.search, (value, key) => {
-        if (value === this.filter) {
-          $.fn.dataTable.ext.search.splice(key, 1)
-          return false
-        }
-      })
-      $('#select-category').val('')
-      $('#select-category option').each((index, option) => {
-        // don't hide 'All'
-        if ($(option).val() !== '') {
-          $(option).hide()
-        }
-      })
-      $('#select-category').trigger('change')
-      this.active = false
-    } 
-    else {
-      if (!this.active) {
-        $.fn.dataTable.ext.search.push(this.filter)
-        this.active = true
-      }
-      $('#select-category').val('')
-      $('#select-category option').each((index, option) => {
-        if ($(option).data('group-id') === this.filterGroupId) {
-          $(option).show()
-        }
-        // don't hide 'All'
-        else if ($(option).val() !== '') {
-          $(option).hide()
-        }
-      })
-      $('#select-category').trigger('change')
+    this.filterGroups = e
+    if (!this.active) {
+      $.fn.dataTable.ext.search.push(this.filter)
+      this.active = true
     }
     $('#achievements').DataTable().draw()
   }

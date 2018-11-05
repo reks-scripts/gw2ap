@@ -1,18 +1,19 @@
 'use strict'
 
-// Load application styles
-import '@babel/polyfill'
-import 'styles/index.scss'
-import 'bootstrap'
-import 'gasparesganga-jquery-loading-overlay'
-import 'datatables.net-bs4/css/dataTables.bootstrap4.css'
-
 // Load modules
 import $ from 'jquery'
 import Fetch from 'node-fetch'
 import Boom from 'boom'
 import { forEach } from 'lodash'
 import { COLUMNS } from '../config/column-definitions'
+
+// Load application styles
+import '@babel/polyfill'
+import 'styles/index.scss'
+import 'bootstrap'
+import 'bootstrap-select'
+import 'gasparesganga-jquery-loading-overlay'
+import 'datatables.net-bs4/css/dataTables.bootstrap4.css'
 
 // Data tables
 import 'datatables.net-bs4'
@@ -34,7 +35,8 @@ import { Plugins } from './plugins'
 import { Filters } from './filters'
 
 // APP CODE
-let $dataTable = null
+let $DataTable = null
+let Categories = null
 
 // eslint-disable-next-line
 const API_URL = IS_DEV ? 'http://localhost:3000/' : ''
@@ -103,7 +105,7 @@ const initDataTable = data => {
   $.fn.dataTable.category = Plugins.Category.order
   $.fn.dataTable.category()
 
-  $dataTable = $('#achievements').DataTable({
+  $DataTable = $('#achievements').DataTable({
     data: data,
     dom: '<"clearfix"fl><t><ip>',
     pagingType: 'full',
@@ -182,19 +184,64 @@ const initDataTable = data => {
 
 const initGroupSelect = groups => {
   forEach(groups, group => {
-    $('#select-group').append(`<option value="${group.id}">${group.name}</option>`)
+    $('#select-group').append(`<option value="${group.id}" selected>${group.name}</option>`)
   })
-  $('#select-group').on('change', e => {
-    Filters.filterGroup($(e.currentTarget).val())
+  $('#select-group').selectpicker({
+    style: 'form-control custom-select',
+    selectedTextFormat: 'count > 2',
+    noneSelectedText: 'None',
+    actionsBox: true,
+    size: 10,
+    countSelectedText: (numSelected, numTotal) => {
+      if (numSelected === numTotal) {
+        return 'All'
+      } else {
+        return '{0} groups selected'
+      }
+    }
+  })
+  $('#select-group').on('changed.bs.select', e => {
+    const groups = $(e.currentTarget).val()
+    Filters.filterGroup(groups)
+    buildCategorySelect()
+    $('#select-category').selectpicker('refresh')
   })
 }
 
-const initCategorySelect = categories => {
-  forEach(categories, category => {
-    $('#select-category').append(`<option value="${category.id}" data-group-id="${category.group.id}" style="display:none;">${category.name}</option>`)
+const buildCategorySelect = () => {
+  const groups = $('#select-group').val()
+  let currentOptGroup = ''
+  $('#select-category').empty()
+  forEach(Categories, category => {
+    if (groups.includes(category.group.id)) {
+      if (currentOptGroup !== category.group.name) {
+        currentOptGroup = category.group.name
+        $('#select-category').append(`<optgroup label="${category.group.name}" />`)
+      }
+      $('#select-category optgroup:last').append(`<option value="${category.id}" data-group-id="${category.group.id}" selected>${category.name}</option>`)
+    }
   })
-  $('#select-category').on('change', e => {
-    Filters.filterCategory($(e.currentTarget).val())
+}
+
+const initCategorySelect = () => {
+  buildCategorySelect()
+  $('#select-category').selectpicker({
+    style: 'form-control custom-select',
+    selectedTextFormat: 'count > 1',
+    noneSelectedText: 'None',
+    actionsBox: true,
+    size: 10,
+    countSelectedText: (numSelected, numTotal) => {
+      if (numSelected === numTotal) {
+        return 'All'
+      } else {
+        return '{0} categories selected'
+      }
+    }
+  })
+  $('#select-category').on('changed.bs.select refreshed.bs.select', e => {
+    const categories = $(e.currentTarget).val()
+    Filters.filterCategory(categories)
   })
 }
 
@@ -208,8 +255,8 @@ const toggleAdditionalFilters = e => {
 
 const bindEvents = () => {
   window.addEventListener('resize', () => {
-    if ($dataTable) {
-      $dataTable.draw()
+    if ($DataTable) {
+      $DataTable.draw()
     }
   })
 
@@ -239,15 +286,15 @@ const bindEvents = () => {
     try {
       const achievements = await getAchievements(apiKey)
 
-      if (!$dataTable) {
+      if (!$DataTable) {
         initDataTable(achievements)
       }
 
       const groups = await getGroups()
       initGroupSelect(groups)
-      const categories = await getCategories()
-      initCategorySelect(categories)
-      
+      Categories = await getCategories()
+      initCategorySelect()
+
       $('#btn-filter-in-progress').click()
       $('#page-1').hide()
       $('#page-2').show()
