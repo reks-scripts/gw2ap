@@ -1,12 +1,12 @@
 'use strict'
 
 // Load modules
-import { Filter, FILTER_BUTTON_GROUPS } from './filter'
+import { Filter } from './filter'
 import { COLUMNS } from '../../config/column-definitions'
 
 class FilterItem extends Filter {
   constructor() {
-    super(FILTER_BUTTON_GROUPS.REWARDS)
+    super()
     // eslint-disable-next-line
     this.filter = (settings, data, dataIndex) => {
       const rewards = data[COLUMNS.REWARDS.INDEX]

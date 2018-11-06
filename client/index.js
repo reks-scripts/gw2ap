@@ -4,7 +4,7 @@
 import $ from 'jquery'
 import Fetch from 'node-fetch'
 import Boom from 'boom'
-import { forEach } from 'lodash'
+import { forEach, isArray } from 'lodash'
 import { COLUMNS } from '../config/column-definitions'
 
 // Load application styles
@@ -242,6 +242,7 @@ const initCategorySelect = () => {
   $('#select-category').on('changed.bs.select refreshed.bs.select', e => {
     const categories = $(e.currentTarget).val()
     Filters.filterCategory(categories)
+    updateFilters()
   })
 }
 
@@ -250,6 +251,61 @@ const toggleAdditionalFilters = e => {
     $(e.currentTarget).text('Hide additional filters')
   } else {
     $(e.currentTarget).text('Show additional filters')
+  }
+}
+
+const setFilters = value => {
+  localStorage.setItem('filters', JSON.stringify(value))
+}
+
+const getFilters = () => {
+  return JSON.parse(localStorage.getItem('filters'))
+}
+
+const removeFilters = () => {
+  localStorage.removeItem('filters')
+}
+
+const getFilterState = () => {
+  const filterState = {}
+  $('.filter-settings').each((index, filter) => {
+    if ($(filter).attr('id')) {
+      if ($(filter).attr('type') === 'checkbox') {
+        filterState[$(filter).attr('id')] = $(filter).is(':checked')
+      } else {
+        filterState[$(filter).attr('id')] = $(filter).val()
+      }
+    }
+  })
+  return filterState
+}
+
+const updateFilters = () => {
+  const remember = $('#remember-filters').is(':checked')
+  if (remember) {
+    setFilters(getFilterState())
+  }
+  else {
+    removeFilters()
+  }
+}
+
+const loadFilters = () => {
+  const filters = getFilters()
+  
+  if (filters) {
+    forEach(filters, (value, key) => {
+      const filter = `#${key}`
+      if (value === true && $(filter).attr('type') === 'checkbox') {
+        $(filter).trigger('click')
+      }
+      else if (isArray(value) && $(filter).selectpicker('val')) {
+        $(filter).selectpicker('val', value)
+      }
+      else {
+        $(filter).val(value).trigger('change')
+      }
+    })
   }
 }
 
@@ -273,6 +329,9 @@ const bindEvents = () => {
 
   $('#btn-additional-filters').on('click', toggleAdditionalFilters)
 
+  $('#remember-filters').on('click', updateFilters)
+  $('.filter-settings').on('change', updateFilters)
+
   $('form').on('submit', async e => {
     e.preventDefault()
     $.LoadingOverlay('show')
@@ -295,6 +354,8 @@ const bindEvents = () => {
       Categories = await getCategories()
       initCategorySelect()
 
+      loadFilters()
+
       $('#btn-filter-in-progress').click()
       $('#page-1').hide()
       $('#page-2').show()
@@ -310,7 +371,7 @@ const bindEvents = () => {
   })
 }
 
-const loadForm = async () => {
+const loadForm = () => {
   const apiKey = getApiKey()
   if (apiKey) {
     $('#api-key').val(apiKey)
@@ -319,6 +380,14 @@ const loadForm = async () => {
   else {
     $('#api-key').val('')
     $('#remember-api-key').prop('checked', false)
+  }
+
+  const filters = getFilters()
+  if (filters) {
+    $('#remember-filters').prop('checked', true)
+  }
+  else {
+    $('#remember-filters').prop('checked', false)
   }
 }
 

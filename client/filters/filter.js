@@ -5,8 +5,7 @@ import $ from 'jquery'
 import { forEach } from 'lodash'
 
 const FILTER_BUTTON_GROUPS = {
-  PROGRESS: 'progress',
-  REWARDS: 'rewards'
+  PROGRESS: 'progress'
 }
 
 class Filter {

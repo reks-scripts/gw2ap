@@ -20,23 +20,22 @@
 
   <div id="page-1" class="container">
     <div class="py-4 text-center">
-      <img class="d-block mx-auto mb-3" src="/assets/images/ap-72px.png" alt="" width="72" height="72">
+      <img class="d-block mx-auto mb-3" src="/assets/images/ap-72px.png" alt="GW2AP" width="72" height="72">
       <h2>Welcome to GW2AP</h2>
       <h4>Quick and easy filtering and sorting of your Guild Wars 2 achievements</h4>
       <p class="lead">To get started, please
         <a href="https://account.arena.net/applications/create" target="_blank">create a new API key</a> with
         progression permission, paste it below and click Process My Achievements.</p>
     </div>
-    <div class="col-md-12 order-md-1">
+    <div class="col-md-12">
       <form>
         <div class="mb-3">
           <label for="api-key">API Key</label>
-          <input type="text" class="form-control" id="api-key" placeholder="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXXXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX">
+          <input type="text" class="form-control" id="api-key" placeholder="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXXXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX" />
         </div>
         <div class="custom-control custom-checkbox">
-          <input type="checkbox" class="custom-control-input" id="remember-api-key">
-          <label class="custom-control-label" for="remember-api-key">Remember my API key</span>
-          </label>
+          <input type="checkbox" class="custom-control-input" id="remember-api-key" />
+          <label class="custom-control-label" for="remember-api-key">Remember my API key</label>
         </div>
         <hr class="mb-4">
         <button class="btn btn-primary btn-lg btn-block" type="submit">Process My Achievements</button>
@@ -47,11 +46,11 @@
 
   <div id="page-2" class="container" style="display:none">
     <div class="py-3 text-center">
-      <img class="d-block mx-auto" src="assets/images/ap-72px.png" alt="" width="72" height="72">
+      <img class="d-block mx-auto" src="assets/images/ap-72px.png" alt="GW2AP" width="72" height="72">
     </div>
-    <div class="col-md-12 order-md-1">
+    <div class="col-md-12">
       <div class="form-row">
-        <div class="col-md-6 mb-3">
+        <div class="form-group col-md-auto mb-3">
           <div id="filter-progress" class="btn-group" role="group" aria-label="Progress">
             <button id="btn-filter-in-progress" type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false"
               autocomplete="off">In Progress</button>
@@ -64,48 +63,59 @@
             role="button" aria-expanded="false" aria-controls="additional-filters">Show additional filters</button>
         </div>
       </div>
-      <div id="additional-filters" class="collapse">
-        <div class="form-row">
-          <div class="col-md-4 mb-4 mt-2">
-            <label for="select-group" class="text-dark">Filter by Group</label>
-            <select multiple id="select-group" class="form-control custom-select"></select>
-          </div>
-          <div class="col-md-4 mb-4 mt-2">
-            <label for="select-category" class="text-dark">Filter by Category</label>
-            <select multiple id="select-category" class="form-control custom-select"></select>
-          </div>
+    </div>
+    <div id="additional-filters" class="col-md-12 collapse">
+      <div class="form-row">
+        <div class="form-group col-md-auto w-300 mb-4 mt-2">
+          <label for="select-group" class="text-dark">Filter by Group</label>
+          <select multiple id="select-group" class="form-control custom-select filter-settings"></select>
         </div>
-        <div class="form-row">
-          <div class="form-group form-inline col-md-5 mb-3">
-            <label for="filter-min-next-tier" class="text-dark">AP Next Tier &ge; </label>
-            <input id="filter-min-next-tier" class="form-control form-control-sm ml-2" type="number" value="0" min="0"
-              max="50" />
-            <label for="filter-min-remaining" class="text-dark ml-4">Remaining AP &ge; </label>
-            <input id="filter-min-remaining" class="form-control form-control-sm ml-2" type="number" value="0" min="0"
-              max="50" />
-          </div>
-          <div class="form-group form-inline col-md-4 mb-3">
-            <label for="filter-count" class="text-dark mr-3">Objective Count </label>
-            <select class="custom-select custom-select-sm" id="filter-objective-logic">
-              <option value="gte" selected>&ge;</option>
-              <option value="lte">&le;</option>
-            </select>
-            <input id="filter-objective-count" class="form-control form-control-sm" type="number" value="0" min="0" max="100000" />
-          </div>
+        <div class="form-group col-md-auto w-300 mb-4 mt-2">
+          <label for="select-category" class="text-dark">Filter by Category</label>
+          <select multiple id="select-category" class="form-control custom-select filter-settings"></select>
         </div>
-        <div class="form-group form-inline mb-2">
+      </div>
+      <div class="form-row">
+        <div class="form-group form-inline col-md-auto mb-4 mr-4">
+          <label for="filter-min-next-tier" class="text-dark mr-3">AP Next Tier &ge; </label>
+          <input id="filter-min-next-tier" class="form-control form-control-sm filter-settings" type="number" value="0" min="0" max="50" />
+        </div>
+        <div class="form-group form-inline col-md-auto mb-4 mr-4">
+          <label for="filter-min-remaining" class="text-dark mr-3">Remaining AP &ge; </label>
+          <input id="filter-min-remaining" class="form-control form-control-sm filter-settings" type="number" value="0" min="0" max="50" />
+        </div>
+        <div class="form-group form-inline col-md-auto mb-4">
+          <label for="filter-count" class="text-dark mr-3">Objective Count </label>
+          <select class="custom-select custom-select-sm filter-settings" id="filter-objective-logic">
+            <option value="gte" selected>&ge;</option>
+            <option value="lte">&le;</option>
+          </select>
+          <input id="filter-objective-count" class="form-control form-control-sm filter-settings" type="number" value="0" min="0" max="100000" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group form-inline col-md-auto mb-4">
           <label class="text-dark mr-3">Includes Reward</label>
           <div class="form-check form-check-inline">
-            <input id="btn-filter-title" class="form-check-input" type="checkbox" value="title">
+            <input id="btn-filter-title" class="form-check-input filter-settings" type="checkbox" value="title">
             <label for="btn-filter-title" class="form-check-label text-dark">Title</label>
           </div>
           <div class="form-check form-check-inline">
-            <input id="btn-filter-mastery" class="form-check-input" type="checkbox" value="mastery">
+            <input id="btn-filter-mastery" class="form-check-input filter-settings" type="checkbox" value="mastery">
             <label for="btn-filter-mastery" class="form-check-label text-dark">Mastery</label>
           </div>
           <div class="form-check form-check-inline">
-            <input id="btn-filter-item" class="form-check-input" type="checkbox" value="item">
+            <input id="btn-filter-item" class="form-check-input filter-settings" type="checkbox" value="item">
             <label for="btn-filter-item" class="form-check-label text-dark">Item</label>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-inline col-md-auto">
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="remember-filters">
+            <label class="custom-control-label" for="remember-filters">Remember my filter settings</span>
+            </label>
           </div>
         </div>
       </div>
@@ -124,14 +134,12 @@
       </thead>
     </table>
   </div>
-  </div>
 
   <footer class="my-3 pt-5 text-muted text-center text-small">
     <p class="mb-1">
       <script>document.write(new Date().getFullYear())</script> <a href="https://github.com/reks-scripts/gw2ap">reks-scripts</a>
     </p>
   </footer>
-  </div>
 </body>
 
 </html>
