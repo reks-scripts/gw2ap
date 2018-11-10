@@ -2,7 +2,6 @@
 
 // Load modules
 import $ from 'jquery'
-import { forEach } from 'lodash'
 import { Filter } from './filter'
 import { COLUMNS } from '../../config/column-definitions'
 
@@ -41,16 +40,7 @@ class FilterObjectiveCount extends Filter {
     this.objectiveCount = parseInt($('#filter-objective-count').val())
     this.objectiveLogic = $('#filter-objective-logic').val()
 
-    if (this.active && this.objectiveCount === 0) {
-      forEach($.fn.dataTable.ext.search, (value, key) => {
-        if (value === this.filter) {
-          $.fn.dataTable.ext.search.splice(key, 1)
-          return false
-        }
-      })
-      this.active = false
-    } 
-    else if (!this.active && this.objectiveCount !== '') {
+    if (!this.active) {
       $.fn.dataTable.ext.search.push(this.filter)
       this.active = true
     }
