@@ -1,6 +1,6 @@
 {
   "name": "gw2ap",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Quick and easy searching and sorting of your Guild Wars 2 achievements",
   "author": "Ryan Knowles",
   "license": "MIT",
@@ -38,12 +38,12 @@
     "inert": "^5.1.1",
     "jquery": "^3.3.1",
     "lodash": "4.17.11",
-    "node-fetch": "^2.2.0",
-    "popper.js": "^1.14.4"
+    "node-fetch": "^2.2.1",
+    "popper.js": "^1.14.5"
   },
   "devDependencies": {
     "@babel/core": "7.1.0",
-    "@babel/preset-env": "^7.1.0",
+    "@babel/preset-env": "^7.1.5",
     "babel-loader": "8.0.2",
     "babel-plugin-syntax-dynamic-import": "6.18.0",
     "babel-plugin-transform-es2015-arrow-functions": "^6.22.0",
