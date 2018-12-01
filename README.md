@@ -1,4 +1,4 @@
-# gw2ap
+# [GW2AP](https://gw2ap.com)
 
 ## Running locally
 

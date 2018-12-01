@@ -15,7 +15,7 @@ const wikiLink = (cutoff, wordbreak) => {
     link = encodeURI(link)
     const text = truncate(d, 'display')
 
-    return `<a href="https://wiki.guildwars2.com/wiki/${link}" target="_blank">${text}</a>`
+    return `<a href="https://wiki.guildwars2.com/wiki/Special:Search/${link}" target="_blank">${text}</a>`
   }
 }
 
