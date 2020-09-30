@@ -2,10 +2,10 @@
 
 // Load modules
 const Path = require('path')
-const Hapi = require('hapi')
-const Inert = require('inert')
+const Hapi = require('@hapi/hapi')
+const Inert = require('@hapi/inert')
+const Memory = require('@hapi/catbox-memory')
 const HapiGate = require('hapi-gate')
-const Memory = require('catbox-memory')
 const Routes = require('./routes')
 const GW2API = require('./gw2api')
 
@@ -38,7 +38,7 @@ const provision = async () => {
   await server.route(Routes)
 
   // cache
-  await server.cache.provision({ engine: Memory, name: 'gw2ap' })
+  await server.cache.provision({ provider: Memory, name: 'gw2ap' })
 
   await server.start()
   // eslint-disable-next-line
