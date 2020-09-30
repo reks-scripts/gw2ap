@@ -70,6 +70,13 @@ const getByIds = async (what, ids, batchSize) => {
   return result
 }
 
+const ignorable = achievement => {
+  if (achievement.flags.includes('IgnoreNearlyComplete')) {
+    return true
+  }
+  return false
+}
+
 const repeatable = achievement => {
   if (achievement.flags.includes('Repeatable')) {
     return _.round(achievement.point_cap / achievement.tiers[0].points)
@@ -82,6 +89,9 @@ const isDone = (achievement, progress) => {
     return true
   }
   if (progress.repeated && progress.repeated >= repeatable(achievement)) {
+    return true
+  }
+  if (ignorable(achievement)) {
     return true
   }
   return false
