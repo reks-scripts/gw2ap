@@ -1,4 +1,5 @@
 'use strict'
 
-// eslint-disable-next-line
-const server = require('./server')
+const provision = require('./server')
+
+provision()

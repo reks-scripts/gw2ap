@@ -51,4 +51,4 @@ process.on('unhandledRejection', (err) => {
   process.exit(1)
 })
 
-provision()
+module.exports = provision

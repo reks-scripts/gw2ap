@@ -10,7 +10,7 @@
   },
   "scripts": {
     "start": "node app.js",
-    "dev-server": "cross-env NODE_ENV=development nodemon ./server/index.js",
+    "dev-server": "cross-env NODE_ENV=development nodemon ./app.js",
     "dev-client": "cross-env NODE_ENV=development webpack-dev-server --progress --mode development --config ./webpack.config.dev.js",
     "dev": "npm-run-all -p dev-server dev-client",
     "build": "webpack -p --progress --mode production --config ./webpack.config.build.js"
