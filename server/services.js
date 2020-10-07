@@ -290,7 +290,7 @@ const getCategories = API.getCategories = async (request, h) => {
       })
     })
   })
-  return results
+  return _.orderBy(results, ['group.order', 'order'])
 }
 
 const getAchievementsWithCategories = API.getAchievementsWithCategories = async (request, h) => {
