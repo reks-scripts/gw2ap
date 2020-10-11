@@ -3,19 +3,18 @@
 // Load modules
 import $ from 'jquery'
 
-const Category = {}
+const category = {}
 
 // DATA TABLES PLUGIN
-Category.render = () => {
+category.render = () => {
   // eslint-disable-next-line
   return (d, type, row) => {
     return `<img src="${d.icon}" alt="${d.name}" title="${d.name}" data-type="category" data-category-id="${d.id}" width="32" height="32" />`
   }
 }
 
-/* Create an array with the values of all the input boxes in a column */
-Category.order = () => {
-  var types = $.fn.dataTable.ext.type
+category.order = () => {
+  let types = $.fn.dataTable.ext.type
 
   // Add type detection
   types.detect.unshift(d => {
@@ -38,4 +37,4 @@ Category.order = () => {
   }
 }
 
-export { Category }
+export { category }

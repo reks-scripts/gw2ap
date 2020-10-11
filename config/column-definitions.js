@@ -3,59 +3,59 @@
 const COLUMNS = {
   TIER_PROGRESS: {
     DATA: 'tierProgress',
-    INDEX: 0
+    INDEX: 1
   },
   NAME: {
     DATA: 'name',
-    INDEX: 1
+    INDEX: 2
   },
   NEXT_TIER_AP: {
     DATA: 'nextTierAP',
-    INDEX: 2
+    INDEX: 3
   },
   TOTAL_PROGRESS: {
     DATA: 'totalProgress',
-    INDEX: 3
+    INDEX: 4
   },
   REMAINING_AP: {
     DATA: 'remainingAP',
-    INDEX: 4
+    INDEX: 5
   },
   CATEGORY: {
     DATA: 'category',
-    INDEX: 5
+    INDEX: 6
   },
   DESCRIPTION: {
     DATA: 'description',
-    INDEX: 6
+    INDEX: 7
   },
   REQUIREMENT: {
     DATA: 'requirement',
-    INDEX: 7
+    INDEX: 8
   },
   REWARDS: {
     DATA: 'rewards',
-    INDEX: 8
+    INDEX: 9
   },
   GROUP: {
     DATA: 'group.id',
-    INDEX: 9
+    INDEX: 10
   },
   FLAGS: {
     DATA: 'flags',
-    INDEX: 10
+    INDEX: 11
   },
   TYPE: {
     DATA: 'type',
-    INDEX: 11
+    INDEX: 12
   },
   COUNT: {
     DATA: 'count',
-    INDEX: 12
+    INDEX: 13
   },
   ID: {
     DATA: 'id',
-    INDEX: 13
+    INDEX: 14
   }
 }
 

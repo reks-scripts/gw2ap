@@ -1,12 +1,14 @@
 'use strict'
 
-import { Category } from './category'
+import { category } from './category'
+import { details } from './details'
 import { ellipsis } from './ellipsis'
 import { percentageBars } from './percentage-bars'
 import { wikiLink } from './wiki-link'
 
 const Plugins = {
-  Category,
+  category,
+  details,
   ellipsis,
   percentageBars,
   wikiLink

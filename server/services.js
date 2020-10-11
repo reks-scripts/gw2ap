@@ -44,8 +44,7 @@ const fetch = async (url, options) => {
   }
 }
 
-const getByIds = async (what, ids, batchSize) => {
-  batchSize = batchSize || 0
+const getByIds = async (what, ids, batchSize = 0) => {
   const promises = []
   
   let id, promise
@@ -70,13 +69,6 @@ const getByIds = async (what, ids, batchSize) => {
   return result
 }
 
-const ignorable = achievement => {
-  if (achievement.flags.includes('IgnoreNearlyComplete')) {
-    return true
-  }
-  return false
-}
-
 const repeatable = achievement => {
   if (achievement.flags.includes('Repeatable')) {
     return _.round(achievement.point_cap / achievement.tiers[0].points)
@@ -89,9 +81,6 @@ const isDone = (achievement, progress) => {
     return true
   }
   if (progress.repeated && progress.repeated >= repeatable(achievement)) {
-    return true
-  }
-  if (ignorable(achievement)) {
     return true
   }
   return false
@@ -206,19 +195,45 @@ const getAchievementProgressByID = (myAchievements, id) => {
   return result
 }
 
+const getTiers = (achievement, progress) => {
+  if (!achievement.tiers || !achievement.tiers.length) {
+    return []
+  }
+  _.forEach(achievement.tiers, tier => {
+    if (progress.current && progress.current >= tier.count) {
+      tier.done = true
+    }
+    else {
+      tier.done = false
+    }
+  })
+  return achievement.tiers
+}
+
+const getBits = (achievement, progress) => {
+  if (!achievement.bits || !achievement.bits.length) {
+    return []
+  }
+  _.forEach(achievement.bits, (bit, index) => {
+    if (progress.done || progress.bits && progress.bits.includes(index)) {
+      bit.done = true
+    }
+    else {
+      bit.done = false
+    }
+  })
+  return achievement.bits
+}
+
 const flattenAchievement = (achievement, progress) => {
-  const result = {}
-  result.name = achievement.name
-  result.description = achievement.description
-  result.requirement = achievement.requirement
-  result.category = achievement.category
-  result.group = achievement.group
-  result.type = achievement.type
-  result.id = achievement.id
+  const result = _.clone(achievement)
+  result.progress = _.clone(progress)
   result.totalProgress = getTotalProgress(achievement, progress)
   result.remainingAP = getRemainingAP(achievement, progress)
   result.tierProgress = getTierProgress(achievement, progress)
   result.nextTierAP = getNextTierAP(achievement, progress)
+  result.tiers = getTiers(achievement, progress)
+  result.bits = getBits(achievement, progress)
   result.rewards = getRewards(achievement)
   result.flags = getFlags(achievement)
   result.count = getCount(achievement)

@@ -22,7 +22,7 @@ const ellipsis = (cutoff, wordbreak, escapeHtml) => {
     if (d.length <= cutoff) {
       return d
     }
-    var shortened = d.substr(0, cutoff - 1)
+    let shortened = d.substr(0, cutoff - 1)
     // Find the last white space character in the string
     if (wordbreak) {
       shortened = shortened.replace(/\s([^\s]*)$/, '')

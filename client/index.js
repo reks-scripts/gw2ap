@@ -2,9 +2,7 @@
 
 // Load modules
 import $ from 'jquery'
-import Fetch from 'node-fetch'
-import Boom from 'boom'
-import { forEach, isArray } from 'lodash'
+import _ from 'lodash'
 import { COLUMNS } from '../config/column-definitions'
 
 // Load application styles
@@ -28,6 +26,9 @@ import 'datatables.net-rowreorder-bs4'
 import 'datatables.net-scroller-bs4'
 import 'datatables.net-select-bs4'
 
+// API
+import { API } from './api'
+
 // Data tables plugins
 import { Plugins } from './plugins'
 
@@ -38,41 +39,11 @@ import { Filters } from './filters'
 let $DataTable = null
 let Categories = null
 
-// eslint-disable-next-line
-const API_URL = IS_DEV ? 'http://localhost:3000/' : ''
-
 /* eslint-disable */
 const log = data => {
   console.log(JSON.stringify(data, null, 2))
 }
 /* eslint-enable */
-
-const fetch = async (url, options) => {
-  options = options || {}
-  const result = await Fetch(url, options)
-  if (result.ok) {
-    return result.json()
-  }
-  else {
-    const error = await result.json()
-    throw Boom.badRequest(error.message || 'Bad Request')
-  }
-}
-
-const getGroups = async () => {
-  const url = `${API_URL}api/achievements/groups`
-  return fetch(url)
-}
-
-const getCategories = async () => {
-  const url = `${API_URL}api/achievements/categories`
-  return fetch(url)
-}
-
-const getAchievements = async apiKey => {
-  const url = `${API_URL}api/achievements/${apiKey}`
-  return fetch(url)
-}
 
 const setApiKey = value => {
   localStorage.setItem('api-key', value)
@@ -99,18 +70,18 @@ const initDataTable = data => {
   // attach custom renderers
   $.fn.dataTable.render.ellipsis = Plugins.ellipsis
   $.fn.dataTable.render.wikiLink = Plugins.wikiLink
-  $.fn.dataTable.render.category = Plugins.Category.render
+  $.fn.dataTable.render.category = Plugins.category.render
   $.fn.dataTable.render.percentageBars = Plugins.percentageBars
   // attach custom orderers
-  $.fn.dataTable.category = Plugins.Category.order
+  $.fn.dataTable.category = Plugins.category.order
   $.fn.dataTable.category()
 
   $DataTable = $('#achievements').DataTable({
     data: data,
-    dom: '<"clearfix"fl><t><ip>',
+    dom: '<"clearfix"fl><t><"clearfix"ip>',
     pagingType: 'full',
     scrollCollapse: true,
-    select: true,
+    select: false,
     stateSave: false,
     responsive: true,
     language: {
@@ -163,6 +134,12 @@ const initDataTable = data => {
     ],
     order: [[COLUMNS.TIER_PROGRESS.INDEX, 'desc']],
     columns: [
+      {
+        className: 'details-control',
+        orderable: false,
+        data: null,
+        defaultContent: '<i class="glyphicon glyphicon-plus-sign"></i>'
+      },
       { data: COLUMNS.TIER_PROGRESS.DATA },
       { data: COLUMNS.NAME.DATA },
       { data: COLUMNS.NEXT_TIER_AP.DATA },
@@ -180,10 +157,12 @@ const initDataTable = data => {
     ]
   })
   $('.dataTable').wrap('<div style="overflow:auto" />')
+  
+  $('#achievements').on('click', 'tbody td.details-control', Plugins.details)
 }
 
 const initGroupSelect = groups => {
-  forEach(groups, group => {
+  _.forEach(groups, group => {
     $('#select-group').append(`<option value="${group.id}" selected>${group.name}</option>`)
   })
   $('#select-group').selectpicker({
@@ -212,7 +191,7 @@ const buildCategorySelect = () => {
   const groups = $('#select-group').val()
   let currentOptGroup = ''
   $('#select-category').empty()
-  forEach(Categories, category => {
+  _.forEach(Categories, category => {
     if (groups.includes(category.group.id)) {
       if (currentOptGroup !== category.group.name) {
         currentOptGroup = category.group.name
@@ -294,12 +273,12 @@ const loadFilters = () => {
   const filters = getFilters()
   
   if (filters) {
-    forEach(filters, (value, key) => {
+    _.forEach(filters, (value, key) => {
       const filter = `#${key}`
       if (value === true && $(filter).attr('type') === 'checkbox') {
         $(filter).trigger('click')
       }
-      else if (isArray(value) && $(filter).selectpicker('val')) {
+      else if (_.isArray(value) && $(filter).selectpicker('val')) {
         $(filter).selectpicker('val', value)
       }
       else {
@@ -343,27 +322,28 @@ const bindEvents = () => {
     updateApiKey(apiKey, remember)
     
     try {
-      const achievements = await getAchievements(apiKey)
+      const achievements = await API.getAchievements(apiKey)
 
       if (!$DataTable) {
         initDataTable(achievements)
       }
 
-      const groups = await getGroups()
+      const groups = await API.getGroups()
       initGroupSelect(groups)
-      Categories = await getCategories()
+      Categories = await API.getCategories()
       initCategorySelect()
 
       loadFilters()
 
-      $('#btn-filter-in-progress').click()
+      $('#btn-filter-in-progress').trigger('click')
       $('#page-1').hide()
       $('#page-2').show()
     } 
     catch (e) {
-      let error = e.output.payload.error || 'Bad Request'
-      if (e.output.payload.message) {
-        error = `${error}: ${e.output.payload.message}`
+      let error = _.get(e, 'error', 'Bad Request')
+      let message = _.get(e, 'message', '')
+      if (message) {
+        error = `${error}: ${message}`
       }
       $('#error').append(`${error}`).show()
     }
