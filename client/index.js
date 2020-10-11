@@ -138,7 +138,7 @@ const initDataTable = data => {
         className: 'details-control',
         orderable: false,
         data: null,
-        defaultContent: '<i class="glyphicon glyphicon-plus-sign"></i>'
+        defaultContent: ''
       },
       { data: COLUMNS.TIER_PROGRESS.DATA },
       { data: COLUMNS.NAME.DATA },
