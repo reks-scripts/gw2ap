@@ -83,6 +83,15 @@ const isDone = (achievement, progress) => {
   if (progress.repeated && progress.repeated >= repeatable(achievement)) {
     return true
   }
+  let result = 0
+  _.forEach(achievement.tiers, tier => {
+    if (!progress.current || progress.current && tier.count > progress.current) {
+      result += tier.points
+    }
+  })
+  if (result === -1) {
+    return true
+  }
   return false
 }
 
