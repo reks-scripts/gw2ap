@@ -28,7 +28,7 @@ const format = async d => {
   }
 
   const promises = []
-  const bits = $('<table class="table table-sm mb-3">')
+  const bits = $('<table class="table-sm mb-3">')
   let row = $('<tr>')
 
   _.forEach(d.bits, async bit => {
