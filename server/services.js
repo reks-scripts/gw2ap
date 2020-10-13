@@ -155,7 +155,24 @@ const getRemainingAP = (achievement, progress) => {
       result += tier.points
     }
   })
+  return result
+}
 
+const getEarnedAP = (achievement, progress) => {
+  let result = 0
+  _.forEach(achievement.tiers, tier => {
+    if (progress.current && tier.count <= progress.current) {
+      result += tier.points
+    }
+  })
+  return result
+}
+
+const getTotalAP = achievement => {
+  let result = 0
+  _.forEach(achievement.tiers, tier => {
+    result += tier.points
+  })
   return result
 }
 
@@ -233,6 +250,7 @@ const flattenAchievement = (achievement, progress) => {
   result.progress = _.clone(progress)
   result.totalProgress = getTotalProgress(achievement, progress)
   result.remainingAP = getRemainingAP(achievement, progress)
+  result.earnedAP = getEarnedAP(achievement, progress)
   result.tierProgress = getTierProgress(achievement, progress)
   result.nextTierAP = getNextTierAP(achievement, progress)
   result.tiers = getTiers(achievement, progress)
@@ -240,6 +258,7 @@ const flattenAchievement = (achievement, progress) => {
   result.rewards = getRewards(achievement)
   result.flags = getFlags(achievement)
   result.count = getCount(achievement)
+  result.totalAP = getTotalAP(achievement)
   return result
 }
 

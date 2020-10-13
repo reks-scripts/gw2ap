@@ -158,7 +158,7 @@ const initDataTable = data => {
   })
   $('.dataTable').wrap('<div style="overflow:auto" />')
   
-  $('#achievements').on('click', 'tbody td.details-control', Plugins.details)
+  $('#achievements').on('click tap', 'tbody td.details-control', Plugins.details)
 }
 
 const initGroupSelect = groups => {

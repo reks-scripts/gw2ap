@@ -18,7 +18,28 @@ const renderSkin = skin => {
 }
 
 const format = async d => {
-  const div = $('<div>')
+  console.log(d)
+  
+  const div = $('<div class="details">')
+  const section = $('<section>')
+
+  section.append($('<p>').append(d.earnedAP, ' / ', d.totalAP, ' <span class="ap"></span>'))
+
+  if (d.tiers && d.tiers.length > 1) {
+    let currentTier = 1
+    _.forEach(d.tiers, (tier, index) => {
+      if (tier.done) {
+        currentTier = index + 1
+      }
+    })
+    section.append($('<p>').append(currentTier, ' / ', d.tiers.length, ' Tiers'))
+  }
+
+  if (!_.isEmpty(d.progress)) {
+    section.append($('<p>').append(d.progress.current, ' / ', d.progress.max, ' Objectives'))
+  }
+
+  div.append(section)
 
   if (d.requirement) {
     div.append($('<p>').append(d.requirement))
@@ -88,7 +109,7 @@ const format = async d => {
     else {
       row.append($('<td class="notdone">').append('—')) 
     }
-    row.append($('<td>').append(`<small>Tier  ${(index + 1)}</small>`))
+    row.append($('<td>').append(`<small>Tier ${(index + 1)}</small>`))
     row.append($('<td>').append(`<small>${tier.points} <span class="ap"></span></small>`))
     row.append($('<td>').append(`<small>${numberWithCommas(tier.count)} objectives completed</small>`))
     tiers.append(row)

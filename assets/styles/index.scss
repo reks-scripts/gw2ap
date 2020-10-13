@@ -22,11 +22,6 @@ html {
   float: right;
 }
 
-table.dataTable.nowrap th,
-table.dataTable.nowrap td {
-    white-space: normal!important;
-}
-
 .dropdown-toggle::after {
   display: none!important;
 }
@@ -77,6 +72,20 @@ img.notdone {
 
 .skin {
   display: inline-block;
+}
+
+.details {
+  white-space: normal;
+}
+
+.details section {
+  float: right;
+  text-align: right;
+}
+
+.details section p {
+  font-size: .75rem;
+  margin-bottom: 2px;
 }
 
 tr td.details-control::before {
