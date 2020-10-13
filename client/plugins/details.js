@@ -18,8 +18,6 @@ const renderSkin = skin => {
 }
 
 const format = async d => {
-  console.log(d)
-  
   const div = $('<div class="details">')
   const section = $('<section>')
 
