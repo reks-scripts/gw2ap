@@ -182,9 +182,9 @@ const getRewards = achievement => {
     return result
   }
   _.forEach(achievement.rewards, reward => {
-    result.push(reward.type)
+    result.push(reward)
   })
-  return result
+  return JSON.stringify(result)
 }
 
 const getFlags = achievement => {

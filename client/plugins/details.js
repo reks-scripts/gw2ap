@@ -9,26 +9,71 @@ const numberWithCommas = x => {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 }
 
-const renderSkin = skin => {
+const renderLink = name => {
+  let href = name.split(' ').join('_')
+  href = href.replace(/[[\]{}|<>#"]/g, '')
+  href = encodeURI(href)
+
+  return $(`<a href="https://wiki.guildwars2.com/wiki/Special:Search/${href}" target="_blank">`)
+}
+
+const renderItem = skin => {
   const icon = $('<img>')
     .attr('src', skin.icon)
     .attr('title', skin.name)
     .attr('alt', skin.name)
-    .attr('height', '64')
-    .attr('width', '64')
+    .attr('height', '32')
+    .attr('width', '32')
 
-  let href = skin.name.split(' ').join('_')
-  href = href.replace(/[[\]{}|<>#"]/g, '')
-  href = encodeURI(href)
-
-  let link =  $(`<a href="https://wiki.guildwars2.com/wiki/Special:Search/${href}" target="_blank">`)
+  const link = renderLink(skin.name)
 
   return link.append(icon)
 }
 
-const format = async d => {
-  const div = $('<div class="details">')
-  const section = $('<section>')
+const renderTitle = title => {
+  const icon = $('<img>')
+    .attr('src', './assets/images/title.png')
+    .attr('title', title.name)
+    .attr('alt', title.name)
+    .attr('height', '32')
+    .attr('width', '32')
+
+  const link = renderLink(title.name)
+
+  return link.append(icon)
+}
+
+const renderMastery = mastery => {
+  let title, image
+  switch (mastery.region.toLowerCase()) {
+  case 'tyria':
+    title = 'Central Tyria Mastery Point'
+    image = 'mp_central_tyria.png'
+    break
+  case 'maguuma':
+    title = 'Heart of Thorns Mastery Point'
+    image = 'mp_heart_of_thorns.png'
+    break
+  case 'desert':
+    title = 'Path of Fire Mastery Point'
+    image = 'mp_path_of_fire.png'
+    break
+  case 'tundra':
+    title = 'Icebrood Saga Mastery Point'
+    image = 'mp_icebrood_saga.png'
+    break
+  }
+
+  return $('<img>')
+    .attr('src', `./assets/images/${image}`)
+    .attr('title', title)
+    .attr('alt', title)
+    .attr('height', '32')
+    .attr('width', '32')
+}
+
+const renderSummary = d => {
+  let section = $('<section>')
 
   section.append($('<p>').append(d.earnedAP, ' / ', d.totalAP, ' <span class="ap"></span>'))
 
@@ -46,16 +91,60 @@ const format = async d => {
     section.append($('<p>').append(d.progress.current, ' / ', d.progress.max, ' Objectives'))
   }
 
-  div.append(section)
+  return section
+}
 
+const renderRewards = async rewards => {
+  if (typeof rewards === 'string') {
+    const parsed = JSON.parse(rewards)
+    let promises = []
+    _.forEach(parsed, reward => {
+      if (reward.type === 'Item') {
+        promises.push(API.getItem(reward.id))
+      }
+      else if (reward.type === 'Title') {
+        promises.push(API.getTitle(reward.id))
+      }
+    })
+
+    const promised = await Promise.all(promises)
+
+    const section = $('<section>')
+    _.forEach(parsed, reward => {
+      if (reward.type === 'Mastery') {
+        section.append(renderMastery(reward))
+      }
+    })
+
+    _.forEach(promised, item => {
+      if (!Object.hasOwnProperty.call(item, 'type')) {
+        section.append(renderTitle(item))
+      }
+      else {
+        section.append(renderItem(item))
+      }
+    })
+
+    return section
+  }
+  else {
+    return ''
+  }
+}
+
+const renderDescription = d => {
+  const div = $('<div>')
   if (d.requirement) {
     div.append($('<p>').append(d.requirement))
   }
   if (d.description) {
     div.append($('<p class="flavor">').append(d.description))
   }
+  return div
+}
 
-  const promises = []
+const renderObjective = async d => {
+  let promises = []
   const bits = $('<table class="table-sm mb-3">')
   let row = $('<tr>')
 
@@ -83,47 +172,64 @@ const format = async d => {
     const promised = await Promise.all(promises)
 
     _.forEach(promised, item => {
-      const rendered = renderSkin(item)
+      const rendered = renderItem(item)
       const bit = _.find(d.bits, { id: item.id })
       if (!bit.done) {
-        rendered.addClass('notdone')
+        rendered.find('img').addClass('notdone')
       }
       row.append($('<td class="skin">').append(rendered))
     })
 
     let title = 'Objectives:'
     if (d.bits.length) {
-      if (d.bits[0].type === 'Skin' || d.bits[0].type === 'Item') {
+      if (d.bits && d.bits.length > 0 && d.bits[0].type === 'Skin' || d.bits[0].type === 'Item') {
         title = 'Collection:'
         bits.append(row)
-        div.append($('<div>').append($('<h5>').text(title), bits))
+        return $('<div>').append($('<h5>').text(title), bits)
       }
       else {
-        div.append($('<div class="float-left mr-5">').append($('<h5>').text(title), bits))
+        return $('<div class="float-left mr-5">').append($('<h5>').text(title), bits)
       }
     }
   }
   catch (e) {
     // bad item or skin id from API
+    return ''
   }
+}
 
-  const tiers = $('<table class="table-sm mb-3">')
-  _.forEach(d.tiers, (tier, index) => {
-    const row = $('<tr>')
-    if (tier.done) {
-      row.append($('<td class="done">').append('✓'))
-    }
-    else {
-      row.append($('<td class="notdone">').append('—')) 
-    }
-    row.append($('<td>').append(`<small>Tier ${(index + 1)}</small>`))
-    row.append($('<td>').append(`<small>${tier.points} <span class="ap"></span></small>`))
-    row.append($('<td>').append(`<small>${numberWithCommas(tier.count)} objectives completed</small>`))
-    tiers.append(row)
-  })
+const renderTiers = d => {
   if (d.tiers.length > 1) {
-    div.append($('<div class="float-left">').append($('<h5>').text('Tiers:'), tiers))
+    const table = $('<table class="table-sm mb-3">')
+    _.forEach(d.tiers, (tier, index) => {
+      const row = $('<tr>')
+      if (tier.done) {
+        row.append($('<td class="done">').append('✓'))
+      }
+      else {
+        row.append($('<td class="notdone">').append('—')) 
+      }
+      row.append($('<td>').append(`<small>Tier ${(index + 1)}</small>`))
+      row.append($('<td>').append(`<small>${tier.points} <span class="ap"></span></small>`))
+      row.append($('<td>').append(`<small>${numberWithCommas(tier.count)} objectives completed</small>`))
+      table.append(row)
+    })
+
+    return $('<div class="float-left">').append($('<h5>').text('Tiers:').append(table))
   }
+  else {
+    return ''
+  }
+}
+
+const format = async d => {
+  const div = $('<div class="details">')
+
+  div.append(renderSummary(d))
+  div.append(await renderRewards(d.rewards))
+  div.append(renderDescription(d))
+  div.append(await renderObjective(d))
+  div.append(renderTiers(d))
 
   return div
 }
@@ -137,8 +243,10 @@ const details = async function() {
     tr.removeClass('shown')
   }
   else {
-    row.child(await format(row.data())).show()
+    var div = $('<div>').addClass( 'loading' ).text( 'Loading...' )
+    row.child(div).show()
     tr.addClass('shown')
+    row.child(await format(row.data()))
   }
 }
 

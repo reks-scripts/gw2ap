@@ -275,8 +275,13 @@ const loadFilters = () => {
   if (filters) {
     _.forEach(filters, (value, key) => {
       const filter = `#${key}`
-      if (value === true && $(filter).attr('type') === 'checkbox') {
-        $(filter).trigger('click')
+      if ($(filter).attr('type') === 'checkbox') {
+        if (value === true) {
+          $(filter).prop('checked', true).triggerHandler('click')
+        }
+        else {
+          $(filter).prop('checked', false)
+        }
       }
       else if (_.isArray(value) && $(filter).selectpicker('val')) {
         $(filter).selectpicker('val', value)

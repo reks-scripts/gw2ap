@@ -46,4 +46,9 @@ API.getItem = async id => {
   return fetch(url)
 }
 
+API.getTitle = async id => {
+  const url = `https://api.guildwars2.com/v2/titles/${id}`
+  return fetch(url)
+}
+
 export { API }

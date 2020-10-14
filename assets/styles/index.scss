@@ -80,12 +80,22 @@ img.notdone {
 
 .details section {
   float: right;
+  margin-left: 10px;
   text-align: right;
 }
 
 .details section p {
   font-size: .75rem;
   margin-bottom: 2px;
+}
+
+.details section a {
+  display: inline-block;
+  height: 32px;
+}
+
+.details section img {
+  margin-right: 10px;
 }
 
 tr td.details-control::before {
