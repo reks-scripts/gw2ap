@@ -10,11 +10,20 @@ const numberWithCommas = x => {
 }
 
 const renderSkin = skin => {
-  return $('<img>')
+  const icon = $('<img>')
     .attr('src', skin.icon)
     .attr('title', skin.name)
+    .attr('alt', skin.name)
     .attr('height', '64')
     .attr('width', '64')
+
+  let href = skin.name.split(' ').join('_')
+  href = href.replace(/[[\]{}|<>#"]/g, '')
+  href = encodeURI(href)
+
+  let link =  $(`<a href="https://wiki.guildwars2.com/wiki/Special:Search/${href}" target="_blank">`)
+
+  return link.append(icon)
 }
 
 const format = async d => {
