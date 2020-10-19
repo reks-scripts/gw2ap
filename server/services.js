@@ -6,17 +6,17 @@ const Fetch = require('node-fetch')
 const _ = require('lodash')
 
 // Declare internals
-const BASE_API = 'https://api.guildwars2.com/v2/'
+const BASE_API = 'https://api.guildwars2.com/v2'
 
 const GW2_API = {
   MAX_BATCH_SIZE: 200,
   DAILY_GROUP_ID: '18DB115A-8637-4290-A636-821362A3C4A8',
   URLS: {
-    ACCOUNT: `${BASE_API}account`,
-    ACCOUNT_ACHIEVEMENTS: `${BASE_API}account/achievements`,
-    ACHIEVEMENTS: `${BASE_API}achievements`,
-    ACHIEVEMENTS_GROUPS: `${BASE_API}achievements/groups`,
-    ACHIEVEMENTS_CATEGORIES: `${BASE_API}achievements/categories`
+    ACCOUNT: `${BASE_API}/account`,
+    ACCOUNT_ACHIEVEMENTS: `${BASE_API}/account/achievements`,
+    ACHIEVEMENTS: `${BASE_API}/achievements`,
+    ACHIEVEMENTS_GROUPS: `${BASE_API}/achievements/groups`,
+    ACHIEVEMENTS_CATEGORIES: `${BASE_API}/achievements/categories`
   }
 }
 
@@ -32,8 +32,7 @@ const getAuthHeader = apiKey => {
   }
 }
 
-const fetch = async (url, options) => {
-  options = options || {}
+const fetch = async (url, options = {}) => {
   const result = await Fetch(url, options)
   if (result.ok) {
     return result.json()
@@ -46,7 +45,6 @@ const fetch = async (url, options) => {
 
 const getByIds = async (what, ids, batchSize = 0) => {
   const promises = []
-  
   let id, promise
   while(ids.length) {
     if (batchSize > 1) {
@@ -59,14 +57,7 @@ const getByIds = async (what, ids, batchSize = 0) => {
     }
     promises.push(promise)
   }
-
-  const batches = await Promise.all(promises)
-
-  let result = []
-  _.forEach(batches, batch => {
-    result = result.concat(batch)
-  })
-  return result
+  return _.flatten(await Promise.all(promises))
 }
 
 const repeatable = achievement => {
@@ -106,7 +97,6 @@ const getTotalProgress = (achievement, progress) => {
       result = _.round(progress.current / tier.count * 100, 1)
     }
   })
-
   return result
 }
 
@@ -139,7 +129,6 @@ const getNextTierAP = (achievement, progress) => {
 }
 
 const getRemainingAP = (achievement, progress) => {
-  let result = 0
   if (isDone(achievement, progress)) {
     return 0
   }
@@ -150,69 +139,51 @@ const getRemainingAP = (achievement, progress) => {
       return achievement.point_cap
     }
   }
-  _.forEach(achievement.tiers, tier => {
+  return _.sumBy(achievement.tiers, tier => {
     if (!progress.current || progress.current && tier.count > progress.current) {
-      result += tier.points
+      return tier.points
     }
+    return 0
   })
-  return result
 }
 
 const getEarnedAP = (achievement, progress) => {
-  let result = 0
-  _.forEach(achievement.tiers, tier => {
+  return _.sumBy(achievement.tiers, tier => {
     if (progress.current && tier.count <= progress.current) {
-      result += tier.points
+      return tier.points
     }
+    return 0
   })
-  return result
 }
 
 const getTotalAP = achievement => {
-  let result = 0
-  _.forEach(achievement.tiers, tier => {
-    result += tier.points
+  return _.sumBy(achievement.tiers, tier => {
+    return tier.points
   })
-  return result
 }
 
 const getRewards = achievement => {
-  let result = []
   if (!achievement.rewards || !achievement.rewards.length) {
-    return result
+    return []
   }
-  _.forEach(achievement.rewards, reward => {
-    result.push(reward)
-  })
-  return JSON.stringify(result)
+  return JSON.stringify(_.flatten(achievement.rewards))
 }
 
 const getFlags = achievement => {
-  let result = []
   if (!achievement.flags || !achievement.flags.length) {
-    return result
+    return []
   }
-  result = achievement.flags
-  return result
+  return achievement.flags
 }
 
 const getCount = achievement => {
-  let result = 1
-  _.forEach(achievement.tiers, tier => {
-    result = tier.count
-  })
-  return result
+  return _.maxBy(achievement.tiers, tier => {
+    return tier.count
+  }).count
 }
 
 const getAchievementProgressByID = (myAchievements, id) => {
-  let result = {}
-  _.forEach(myAchievements, myAchievement => {
-    if (myAchievement.id === id) {
-      result = myAchievement
-      return false // break
-    }
-  })
-  return result
+  return _.find(myAchievements, { id: id }) || {}
 }
 
 const getTiers = (achievement, progress) => {
@@ -365,14 +336,11 @@ API.processAchievements = async (request, h) => {
   
   const promised = _.zipObject(['achievements', 'myAchievements'], await Promise.all(_.values([achievements, myAchievements])))
   
-  const results = []
-  _.forEach(promised.achievements, achievement => {
-    const progress = getAchievementProgressByID(promised.myAchievements, achievement.id)
-    const result = flattenAchievement(achievement, progress)
-    results.push(result)
-  })
 
-  return results
+  return _.map(promised.achievements, achievement => {
+    const progress = getAchievementProgressByID(promised.myAchievements, achievement.id)
+    return flattenAchievement(achievement, progress)
+  })
 }
 
 module.exports = { 
