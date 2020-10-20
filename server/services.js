@@ -157,16 +157,14 @@ const getEarnedAP = (achievement, progress) => {
 }
 
 const getTotalAP = achievement => {
-  return _.sumBy(achievement.tiers, tier => {
-    return tier.points
-  })
+  return _.sumBy(achievement.tiers, tier => tier.points)
 }
 
 const getRewards = achievement => {
   if (!achievement.rewards || !achievement.rewards.length) {
     return []
   }
-  return JSON.stringify(_.flatten(achievement.rewards))
+  return JSON.stringify(achievement.rewards)
 }
 
 const getFlags = achievement => {
@@ -177,9 +175,7 @@ const getFlags = achievement => {
 }
 
 const getCount = achievement => {
-  return _.maxBy(achievement.tiers, tier => {
-    return tier.count
-  }).count
+  return _.maxBy(achievement.tiers, tier => tier.count).count
 }
 
 const getAchievementProgressByID = (myAchievements, id) => {
@@ -246,17 +242,13 @@ Cache.getAchievementGroups = async () => {
       return false // break
     }
   })
-  return _.orderBy(groups, group => {
-    return group.order 
-  })
+  return _.orderBy(groups, group => group.order)
 }
 
 Cache.getAchievementCategories = async () => {
   const categoryIds = await fetch(GW2_API.URLS.ACHIEVEMENTS_CATEGORIES)
   const categories = await getByIds(GW2_API.URLS.ACHIEVEMENTS_CATEGORIES, categoryIds)
-  return _.orderBy(categories, category => {
-    return category.order 
-  })
+  return _.orderBy(categories, category => category.order)
 }
 
 Cache.getAchievements = async () => {
@@ -277,7 +269,7 @@ API.getGroups = async (request, h) => {
 const getCategories = API.getCategories = async (request, h) => {
   const groups = request.server.methods.Cache.getAchievementGroups()
   const categories = request.server.methods.Cache.getAchievementCategories()
-  
+
   const promised = _.zipObject(['groups', 'categories'], await Promise.all(_.values([groups, categories])))
 
   const results = []

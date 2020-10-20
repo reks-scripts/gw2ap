@@ -75,7 +75,7 @@ const renderMastery = mastery => {
 const renderSummary = d => {
   let section = $('<section>')
 
-  section.append($('<p>').append(d.earnedAP, ' / ', d.totalAP, ' <span class="ap"></span>'))
+  section.append($('<p>').text(`${d.earnedAP} / ${d.totalAP}`).append($('<span>').addClass('ap')))
 
   if (d.tiers && d.tiers.length > 1) {
     let currentTier = 1
@@ -84,11 +84,11 @@ const renderSummary = d => {
         currentTier = index + 1
       }
     })
-    section.append($('<p>').append(currentTier, ' / ', d.tiers.length, ' Tiers'))
+    section.append($('<p>').text(`${currentTier} / ${d.tiers.length} Tiers`))
   }
 
   if (!_.isEmpty(d.progress)) {
-    section.append($('<p>').append(d.progress.current, ' / ', d.progress.max, ' Objectives'))
+    section.append($('<p>').text(`${d.progress.current} / ${d.progress.max} Objectives`))
   }
 
   return section
@@ -135,29 +135,29 @@ const renderRewards = async rewards => {
 const renderDescription = d => {
   const div = $('<div>')
   if (d.requirement) {
-    div.append($('<p>').append(d.requirement))
+    div.append($('<p>').text(d.requirement))
   }
   if (d.description) {
-    div.append($('<p class="flavor">').append(d.description))
+    div.append($('<p>').addClass('flavor').html(d.description))
   }
   return div
 }
 
 const renderObjective = async d => {
   let promises = []
-  const bits = $('<table class="table-sm mb-3">')
+  const bits = $('<table>').addClass('table-sm mb-3')
   let row = $('<tr>')
 
-  _.forEach(d.bits, async bit => {
+  _.forEach(d.bits, bit => {
     if (bit.type === 'Text') {
       row = $('<tr>')
       if (bit.done) {
-        row.append($('<td class="done">').append('✓'))
+        row.append($('<td>').addClass('done').text('✓'))
       }
       else {
-        row.append($('<td class="notdone">').append('—')) 
+        row.append($('<td>').addClass('notdone').text('—')) 
       }
-      row.append($('<td>').append(`<small>${bit.text}</small>`))
+      row.append($('<td>').append($('<small>').text(bit.text)))
       bits.append(row)
     }
     else if (bit.type === 'Skin') {
@@ -177,7 +177,7 @@ const renderObjective = async d => {
       if (!bit.done) {
         rendered.find('img').addClass('notdone')
       }
-      row.append($('<td class="skin">').append(rendered))
+      row.append($('<td>').addClass('skin').append(rendered))
     })
 
     let title = 'Objectives:'
@@ -188,7 +188,7 @@ const renderObjective = async d => {
         return $('<div>').append($('<h5>').text(title), bits)
       }
       else {
-        return $('<div class="float-left mr-5">').append($('<h5>').text(title), bits)
+        return $('<div>').addClass('float-left mr-5').append($('<h5>').text(title), bits)
       }
     }
   }
@@ -200,22 +200,22 @@ const renderObjective = async d => {
 
 const renderTiers = d => {
   if (d.tiers.length > 1) {
-    const table = $('<table class="table-sm mb-3">')
+    const table = $('<table>').addClass('table-sm mb-3')
     _.forEach(d.tiers, (tier, index) => {
       const row = $('<tr>')
       if (tier.done) {
-        row.append($('<td class="done">').append('✓'))
+        row.append($('<td>').addClass('done').append('✓'))
       }
       else {
-        row.append($('<td class="notdone">').append('—')) 
+        row.append($('<td>').addClass('notdone').append('—')) 
       }
-      row.append($('<td>').append(`<small>Tier ${(index + 1)}</small>`))
-      row.append($('<td>').append(`<small>${tier.points} <span class="ap"></span></small>`))
-      row.append($('<td>').append(`<small>${numberWithCommas(tier.count)} objectives completed</small>`))
+      row.append($('<td>').append($('<small>').text(`Tier ${(index + 1)}`)))
+      row.append($('<td>').append($('<small>').text(`${tier.points}`).append($('<span>').addClass('ap'))))
+      row.append($('<td>').append($('<small>').text(`${numberWithCommas(tier.count)} objectives completed`)))
       table.append(row)
     })
 
-    return $('<div class="float-left">').append($('<h5>').text('Tiers:').append(table))
+    return $('<div>').addClass('float-left').append($('<h5>').text('Tiers:'), table)
   }
   else {
     return ''
@@ -223,7 +223,7 @@ const renderTiers = d => {
 }
 
 const format = async d => {
-  const div = $('<div class="details">')
+  const div = $('<div>').addClass('details')
 
   div.append(renderSummary(d))
   div.append(await renderRewards(d.rewards))
