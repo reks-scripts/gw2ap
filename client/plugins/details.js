@@ -204,10 +204,10 @@ const renderTiers = d => {
     _.forEach(d.tiers, (tier, index) => {
       const row = $('<tr>')
       if (tier.done) {
-        row.append($('<td>').addClass('done').append('✓'))
+        row.append($('<td>').addClass('done').text('✓'))
       }
       else {
-        row.append($('<td>').addClass('notdone').append('—')) 
+        row.append($('<td>').addClass('notdone').text('—')) 
       }
       row.append($('<td>').append($('<small>').text(`Tier ${(index + 1)}`)))
       row.append($('<td>').append($('<small>').text(`${tier.points}`).append($('<span>').addClass('ap'))))
