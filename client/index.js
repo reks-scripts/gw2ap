@@ -293,12 +293,55 @@ const loadFilters = () => {
   }
 }
 
-const bindEvents = () => {
-  window.addEventListener('resize', () => {
-    if ($DataTable) {
-      $DataTable.draw()
+const redrawTable = () => {
+  if ($DataTable) {
+    $DataTable.draw()
+  }
+}
+
+const submitForm = async e => {
+  e.preventDefault()
+  $.LoadingOverlay('show')
+  $('#error').hide().empty()
+
+  const apiKey = $('#api-key').val()
+  const remember = $('#remember-api-key').is(':checked')
+
+  updateApiKey(apiKey, remember)
+    
+  try {
+    const achievements = await API.getAchievements(apiKey)
+
+    if (!$DataTable) {
+      initDataTable(achievements)
     }
-  })
+
+    const groups = await API.getGroups()
+    initGroupSelect(groups)
+    Categories = await API.getCategories()
+    initCategorySelect()
+
+    loadFilters()
+
+    if (!$('#btn-filter-in-progress').hasClass('active')) {
+      $('#btn-filter-in-progress').trigger('click')
+    }
+    $('#page-1').hide()
+    $('#page-2').show()
+  } 
+  catch (e) {
+    let error = _.get(e, 'error', 'Bad Request')
+    let message = _.get(e, 'message', '')
+    if (message) {
+      error = `${error}: ${message}`
+    }
+    $('#error').append(`${error}`).show()
+  }
+  $.LoadingOverlay('hide')
+}
+
+const bindEvents = () => {
+  window.addEventListener('resize', redrawTable)
 
   $('#btn-filter-in-progress').on('click', Filters.filterInProgress)
   $('#btn-filter-not-started').on('click', Filters.filterNotStarted)
@@ -316,44 +359,8 @@ const bindEvents = () => {
   $('#remember-filters').on('click', updateFilters)
   $('.filter-settings').on('change', updateFilters)
 
-  $('form').on('submit', async e => {
-    e.preventDefault()
-    $.LoadingOverlay('show')
-    $('#error').hide().empty()
-
-    const apiKey = $('#api-key').val()
-    const remember = $('#remember-api-key').is(':checked')
-
-    updateApiKey(apiKey, remember)
-    
-    try {
-      const achievements = await API.getAchievements(apiKey)
-
-      if (!$DataTable) {
-        initDataTable(achievements)
-      }
-
-      const groups = await API.getGroups()
-      initGroupSelect(groups)
-      Categories = await API.getCategories()
-      initCategorySelect()
-
-      loadFilters()
-
-      $('#btn-filter-in-progress').trigger('click')
-      $('#page-1').hide()
-      $('#page-2').show()
-    } 
-    catch (e) {
-      let error = _.get(e, 'error', 'Bad Request')
-      let message = _.get(e, 'message', '')
-      if (message) {
-        error = `${error}: ${message}`
-      }
-      $('#error').append(`${error}`).show()
-    }
-    $.LoadingOverlay('hide')
-  })
+  $('form').on('submit', submitForm)
+  $('#btn-refresh').on('click', submitForm)
 }
 
 const loadForm = () => {
