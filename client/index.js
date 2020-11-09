@@ -15,16 +15,6 @@ import 'datatables.net-bs4/css/dataTables.bootstrap4.css'
 
 // Data tables
 import 'datatables.net-bs4'
-import 'datatables.net-buttons-bs4'
-import 'datatables.net-buttons/js/buttons.html5.js'
-import 'datatables.net-colreorder-bs4'
-import 'datatables.net-fixedcolumns-bs4'
-import 'datatables.net-fixedheader-bs4'
-import 'datatables.net-keytable-bs4'
-import 'datatables.net-responsive-bs4'
-import 'datatables.net-rowreorder-bs4'
-import 'datatables.net-scroller-bs4'
-import 'datatables.net-select-bs4'
 
 // API
 import { API } from './api'
