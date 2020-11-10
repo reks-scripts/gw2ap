@@ -3,7 +3,7 @@
 // Load modules
 import $ from 'jquery'
 import _ from 'lodash'
-import { COLUMNS } from '../config/column-definitions'
+import COLUMNS from '../config/column-definitions'
 
 // Load application styles
 import '@babel/polyfill'
@@ -17,13 +17,13 @@ import 'datatables.net-bs4/css/dataTables.bootstrap4.css'
 import 'datatables.net-bs4'
 
 // API
-import { API } from './api'
+import API from './api'
 
 // Data tables plugins
-import { Plugins } from './plugins'
+import Plugins from './plugins'
 
 // Data tables filters
-import { Filters } from './filters'
+import Filters from './filters'
 
 // APP CODE
 let $DataTable = null
@@ -147,7 +147,7 @@ const initDataTable = data => {
     ]
   })
   $('.dataTable').wrap('<div style="overflow:auto" />')
-  
+
   $('#achievements').on('click tap', 'tbody td.details-control', Plugins.details)
 }
 
@@ -261,7 +261,7 @@ const updateFilters = () => {
 
 const loadFilters = () => {
   const filters = getFilters()
-  
+
   if (filters) {
     _.forEach(filters, (value, key) => {
       const filter = `#${key}`
@@ -298,7 +298,7 @@ const submitForm = async e => {
   const remember = $('#remember-api-key').is(':checked')
 
   updateApiKey(apiKey, remember)
-    
+
   try {
     const achievements = await API.getAchievements(apiKey)
 
@@ -318,7 +318,7 @@ const submitForm = async e => {
     }
     $('#page-1').hide()
     $('#page-2').show()
-  } 
+  }
   catch (e) {
     let error = _.get(e, 'error', 'Bad Request')
     let message = _.get(e, 'message', '')

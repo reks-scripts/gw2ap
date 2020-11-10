@@ -1,9 +1,6 @@
 'use strict'
 
-// Load modules
-
-// Declare internals
-const Routes = [
+module.exports = [
   {
     method: 'GET',
     path: '/assets/{path*}',
@@ -39,5 +36,3 @@ const Routes = [
     }
   }
 ]
-
-module.exports = Routes

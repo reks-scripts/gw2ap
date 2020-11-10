@@ -2,15 +2,15 @@
 
 // Load modules
 import { Filter, FILTER_BUTTON_GROUPS } from './filter'
-import { COLUMNS } from '../../config/column-definitions'
+import COLUMNS from '../../config/column-definitions'
 
 class FilterInProgress extends Filter {
   constructor() {
     super(FILTER_BUTTON_GROUPS.PROGRESS)
-    // eslint-disable-next-line
-    this.filter = (settings, data, dataIndex) => {
+    this.filter = (settings, data) => {
       const totalProgress = parseInt(data[COLUMNS.TOTAL_PROGRESS.INDEX])
       const tierProgress = parseInt(data[COLUMNS.TIER_PROGRESS.INDEX])
+
       if ((0 < totalProgress && totalProgress < 100) || (0 < tierProgress && tierProgress < 100)) {
         return true
       } else {
@@ -21,5 +21,4 @@ class FilterInProgress extends Filter {
 }
 
 const _filterInProgress = new FilterInProgress()
-const filterInProgress = _filterInProgress.action.bind(_filterInProgress)
-export { filterInProgress }
+export default _filterInProgress.action.bind(_filterInProgress)

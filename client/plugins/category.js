@@ -7,8 +7,7 @@ const category = {}
 
 // DATA TABLES PLUGIN
 category.render = () => {
-  // eslint-disable-next-line
-  return (d, type, row) => {
+  return d => {
     return `<img src="${d.icon}" alt="${d.name}" title="${d.name}" data-type="category" data-category-id="${d.id}" width="32" height="32" />`
   }
 }
@@ -19,8 +18,8 @@ category.order = () => {
   // Add type detection
   types.detect.unshift(d => {
     try {
-      const $data = $(d).data('type')
-      if ($data === 'category') {
+      const type = $(d).data('type')
+      if (type === 'category') {
         return 'category'
       } else {
         return null
@@ -30,11 +29,11 @@ category.order = () => {
     }
   })
 
-  // Add sorting method - use an integer for the sorting
+  // Add sorting method
   types.order['category-pre'] = d => {
     const category = $(d).attr('title')
     return category
   }
 }
 
-export { category }
+export default category

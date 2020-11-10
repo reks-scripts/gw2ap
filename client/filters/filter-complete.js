@@ -2,13 +2,12 @@
 
 // Load modules
 import { Filter, FILTER_BUTTON_GROUPS } from './filter'
-import { COLUMNS } from '../../config/column-definitions'
+import COLUMNS from '../../config/column-definitions'
 
 class FilterComplete extends Filter {
   constructor() {
     super(FILTER_BUTTON_GROUPS.PROGRESS)
-    // eslint-disable-next-line
-    this.filter = (settings, data, dataIndex) => {
+    this.filter = (settings, data) => {
       if (parseInt(data[COLUMNS.TOTAL_PROGRESS.INDEX]) === 100) {
         return true
       } else {
@@ -19,5 +18,4 @@ class FilterComplete extends Filter {
 }
 
 const _filterComplete = new FilterComplete()
-const filterComplete = _filterComplete.action.bind(_filterComplete)
-export { filterComplete }
+export default _filterComplete.action.bind(_filterComplete)

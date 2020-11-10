@@ -3,13 +3,12 @@
 // Load modules
 import $ from 'jquery'
 import { Filter } from './filter'
-import { COLUMNS } from '../../config/column-definitions'
+import COLUMNS from '../../config/column-definitions'
 
 class FilterGroup extends Filter {
   constructor() {
     super()
-    // eslint-disable-next-line
-    this.filter = (settings, data, dataIndex) => {
+    this.filter = (settings, data) => {
       const groupId = data[COLUMNS.GROUP.INDEX]
 
       if (this.filterGroups.includes(groupId)) {
@@ -33,5 +32,4 @@ class FilterGroup extends Filter {
 }
 
 const _filterGroup = new FilterGroup()
-const filterGroup = _filterGroup.action.bind(_filterGroup)
-export { filterGroup }
+export default _filterGroup.action.bind(_filterGroup)

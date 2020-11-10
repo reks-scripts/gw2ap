@@ -6,6 +6,7 @@ import Boom from 'boom'
 
 // eslint-disable-next-line
 const API_URL = IS_DEV ? 'http://localhost:3000/' : ''
+const GW2_API = 'https://api.guildwars2.com/v2/'
 
 const fetch = async (url, options) => {
   options = options || {}
@@ -20,35 +21,29 @@ const fetch = async (url, options) => {
 }
 
 const API = {}
-  
+
 API.getGroups = async () => {
-  const url = `${API_URL}api/achievements/groups`
-  return fetch(url)
+  return fetch(`${API_URL}api/achievements/groups`)
 }
-  
+
 API.getCategories = async () => {
-  const url = `${API_URL}api/achievements/categories`
-  return fetch(url)
+  return fetch(`${API_URL}api/achievements/categories`)
 }
-  
+
 API.getAchievements = async apiKey => {
-  const url = `${API_URL}api/achievements/${apiKey}`
-  return fetch(url)
+  return fetch(`${API_URL}api/achievements/${apiKey}`)
 }
-  
+
 API.getSkin = async id => {
-  const url = `https://api.guildwars2.com/v2/skins/${id}`
-  return fetch(url)
+  return fetch(`${GW2_API}skins/${id}`)
 }
-  
+
 API.getItem = async id => {
-  const url = `https://api.guildwars2.com/v2/items/${id}`
-  return fetch(url)
+  return fetch(`${GW2_API}items/${id}`)
 }
 
 API.getTitle = async id => {
-  const url = `https://api.guildwars2.com/v2/titles/${id}`
-  return fetch(url)
+  return fetch(`${GW2_API}titles/${id}`)
 }
 
-export { API }
+export default API

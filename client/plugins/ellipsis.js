@@ -1,7 +1,7 @@
 'use strict'
 
 // DATA TABLES PLUGIN
-const ellipsis = (cutoff, wordbreak, escapeHtml) => {
+export default (cutoff, wordbreak, escapeHtml) => {
   const esc = (t) => {
     return t
       .replace(/&/g, '&amp;')
@@ -9,8 +9,8 @@ const ellipsis = (cutoff, wordbreak, escapeHtml) => {
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
   }
-  // eslint-disable-next-line
-  return (d, type, row) => {
+
+  return (d, type) => {
     // Order, search and type get the original data
     if (type !== 'display') {
       return d
@@ -34,5 +34,3 @@ const ellipsis = (cutoff, wordbreak, escapeHtml) => {
     return `<span class="ellipsis" title="${esc(d)}">${shortened}&#8230;</span>`
   }
 }
-
-export { ellipsis }

@@ -3,12 +3,10 @@
 // Load modules
 const { Cache, API } = require('./services')
 
-// Declare internals
-const GW2API = {
+module.exports = {
   name: 'gw2api',
   version: '1.0.0',
-  // eslint-disable-next-line
-  register: async function (server, options) {
+  register: async server => {
 
     server.method('Cache.getAchievementGroups', Cache.getAchievementGroups, {
       cache: {
@@ -51,5 +49,3 @@ const GW2API = {
     })
   }
 }
-
-module.exports = GW2API

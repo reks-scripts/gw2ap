@@ -3,13 +3,12 @@
 // Load modules
 import $ from 'jquery'
 import { Filter } from './filter'
-import { COLUMNS } from '../../config/column-definitions'
+import COLUMNS from '../../config/column-definitions'
 
 class FilterObjectiveCount extends Filter {
   constructor() {
     super()
-    // eslint-disable-next-line
-    this.filter = (settings, data, dataIndex) => {
+    this.filter = (settings, data) => {
       const count = parseInt(data[COLUMNS.COUNT.INDEX])
       if (this.objectiveLogic === 'gte' && count >= this.objectiveCount) {
         return true
@@ -44,11 +43,10 @@ class FilterObjectiveCount extends Filter {
       $.fn.dataTable.ext.search.push(this.filter)
       this.active = true
     }
-    
+
     $('#achievements').DataTable().draw()
   }
 }
 
 const _filterObjectiveCount = new FilterObjectiveCount()
-const filterObjectiveCount = _filterObjectiveCount.action.bind(_filterObjectiveCount)
-export { filterObjectiveCount }
+export default _filterObjectiveCount.action.bind(_filterObjectiveCount)

@@ -1,7 +1,7 @@
 'use strict'
 
 // DATA TABLES PLUGIN
-const percentageBars = (pShape, cText, cBorder, cBar, cBack, vRound, bType) => {
+export default (pShape, cText, cBorder, cBar, cBack, vRound, bType) => {
   pShape = pShape || 'round'
   cText = cText || '#000'
   cBorder = cBorder || '#BCBCBC'
@@ -18,8 +18,8 @@ const percentageBars = (pShape, cText, cBorder, cBar, cBack, vRound, bType) => {
     styleRule2 += 'border-radius:5px;'
     styleRule3 += 'border-top-left-radius:4px;border-bottom-left-radius:4px;'
   }
-  // eslint-disable-next-line
-  return function (d, type, row) {
+
+  return function (d, type) {
     //Remove % if found in the value
     //Round to the given parameter vRound
     let s = parseFloat(d.toString().replace(/\s%|%/g, '')).toFixed(vRound)
@@ -41,5 +41,3 @@ const percentageBars = (pShape, cText, cBorder, cBar, cBack, vRound, bType) => {
     return `<div style="${styleRule1}"><div style="${styleRule2}"><div style="${styleRule3}width:${s}%;"></div><div style="width:100%;text-align:center;position:absolute;left:0;top:0;">${s}%</div></div></div>`
   }
 }
-
-export { percentageBars }

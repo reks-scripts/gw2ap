@@ -2,15 +2,14 @@
 
 // Load modules
 import $ from 'jquery'
-import { forEach } from 'lodash'
+import _ from 'lodash'
 import { Filter } from './filter'
-import { COLUMNS } from '../../config/column-definitions'
+import COLUMNS from '../../config/column-definitions'
 
 class FilterMinNextTier extends Filter {
   constructor() {
     super()
-    // eslint-disable-next-line
-    this.filter = (settings, data, dataIndex) => {
+    this.filter = (settings, data) => {
       const nextTierAp = parseInt(data[COLUMNS.NEXT_TIER_AP.INDEX])
       if (nextTierAp >= this.minNextTier) {
         return true
@@ -37,23 +36,22 @@ class FilterMinNextTier extends Filter {
     this.minNextTier = parseInt($(e.target).val())
 
     if (this.active && this.minNextTier === 0) {
-      forEach($.fn.dataTable.ext.search, (value, key) => {
+      _.forEach($.fn.dataTable.ext.search, (value, key) => {
         if (value === this.filter) {
           $.fn.dataTable.ext.search.splice(key, 1)
           return false
         }
       })
       this.active = false
-    } 
+    }
     else if (!this.active && this.minNextTier !== '') {
       $.fn.dataTable.ext.search.push(this.filter)
       this.active = true
     }
-    
+
     $('#achievements').DataTable().draw()
   }
 }
 
 const _filterMinNextTier = new FilterMinNextTier()
-const filterMinNextTier = _filterMinNextTier.action.bind(_filterMinNextTier)
-export { filterMinNextTier }
+export default _filterMinNextTier.action.bind(_filterMinNextTier)

@@ -3,7 +3,7 @@
 // Load modules
 import $ from 'jquery'
 import _ from 'lodash'
-import { API } from '../api'
+import API from '../api'
 
 const numberWithCommas = x => {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
@@ -143,22 +143,22 @@ const renderDescription = d => {
   return div
 }
 
-const renderObjective = async d => {
+const renderObjective = async bits => {
   let promises = []
-  const bits = $('<table>').addClass('table-sm mb-3')
+  const table = $('<table>').addClass('table-sm mb-3')
   let row = $('<tr>')
 
-  _.forEach(d.bits, bit => {
+  _.forEach(bits, bit => {
     if (bit.type === 'Text') {
       row = $('<tr>')
       if (bit.done) {
         row.append($('<td>').addClass('done').text('✓'))
       }
       else {
-        row.append($('<td>').addClass('notdone').text('—')) 
+        row.append($('<td>').addClass('notdone').text('—'))
       }
       row.append($('<td>').append($('<small>').text(bit.text)))
-      bits.append(row)
+      table.append(row)
     }
     else if (bit.type === 'Skin') {
       promises.push(API.getSkin(bit.id))
@@ -173,7 +173,7 @@ const renderObjective = async d => {
 
     _.forEach(promised, item => {
       const rendered = renderItem(item)
-      const bit = _.find(d.bits, { id: item.id })
+      const bit = _.find(bits, { id: item.id })
       if (!bit.done) {
         rendered.find('img').addClass('notdone')
       }
@@ -181,14 +181,14 @@ const renderObjective = async d => {
     })
 
     let title = 'Objectives:'
-    if (d.bits.length) {
-      if (d.bits && d.bits.length > 0 && d.bits[0].type === 'Skin' || d.bits[0].type === 'Item') {
+    if (bits.length) {
+      if (bits && bits.length > 0 && bits[0].type === 'Skin' || bits[0].type === 'Item') {
         title = 'Collection:'
-        bits.append(row)
-        return $('<div>').append($('<h5>').text(title), bits)
+        table.append(row)
+        return $('<div>').append($('<h5>').text(title), table)
       }
       else {
-        return $('<div>').addClass('float-left mr-5').append($('<h5>').text(title), bits)
+        return $('<div>').addClass('float-left mr-5').append($('<h5>').text(title), table)
       }
     }
   }
@@ -198,16 +198,16 @@ const renderObjective = async d => {
   }
 }
 
-const renderTiers = d => {
-  if (d.tiers.length > 1) {
+const renderTiers = tiers => {
+  if (tiers.length > 1) {
     const table = $('<table>').addClass('table-sm mb-3')
-    _.forEach(d.tiers, (tier, index) => {
+    _.forEach(tiers, (tier, index) => {
       const row = $('<tr>')
       if (tier.done) {
         row.append($('<td>').addClass('done').text('✓'))
       }
       else {
-        row.append($('<td>').addClass('notdone').text('—')) 
+        row.append($('<td>').addClass('notdone').text('—'))
       }
       row.append($('<td>').append($('<small>').text(`Tier ${(index + 1)}`)))
       row.append($('<td>').append($('<small>').text(`${tier.points}`).append($('<span>').addClass('ap'))))
@@ -228,13 +228,13 @@ const format = async d => {
   div.append(renderSummary(d))
   div.append(await renderRewards(d.rewards))
   div.append(renderDescription(d))
-  div.append(await renderObjective(d))
-  div.append(renderTiers(d))
+  div.append(await renderObjective(d.bits))
+  div.append(renderTiers(d.tiers))
 
   return div
 }
 
-const details = async function() {
+export default async function() {
   const tr = $(this).closest('tr')
   const row = $(this).closest('table').DataTable().row(tr)
 
@@ -249,5 +249,3 @@ const details = async function() {
     row.child(await format(row.data()))
   }
 }
-
-export { details }

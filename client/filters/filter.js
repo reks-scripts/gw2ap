@@ -2,7 +2,7 @@
 
 // Load modules
 import $ from 'jquery'
-import { forEach } from 'lodash'
+import _ from 'lodash'
 
 const FILTER_BUTTON_GROUPS = {
   PROGRESS: 'progress'
@@ -14,8 +14,7 @@ class Filter {
     this.filter = null
     this.buttonGroup = buttonGroup || null
   }
-  // eslint-disable-next-line
-  action(e) {
+  action() {
     if (this.toggle === false) {
       if (this.buttonGroup) {
         $(`#filter-${this.buttonGroup} button.active`).click()
@@ -23,7 +22,7 @@ class Filter {
       $.fn.dataTable.ext.search.push(this.filter)
       this.toggle = true
     } else {
-      forEach($.fn.dataTable.ext.search, (value, key) => {
+      _.forEach($.fn.dataTable.ext.search, (value, key) => {
         if (value === this.filter) {
           $.fn.dataTable.ext.search.splice(key, 1)
           return false

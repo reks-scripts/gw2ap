@@ -4,7 +4,7 @@
 const Path = require('path')
 const Hapi = require('@hapi/hapi')
 const Inert = require('@hapi/inert')
-const Memory = require('@hapi/catbox-memory')
+const Catbox = require('@hapi/catbox-memory')
 const HapiGate = require('hapi-gate')
 const Routes = require('./routes')
 const GW2API = require('./gw2api')
@@ -20,7 +20,7 @@ const server = Hapi.server({
   }
 })
 
-const provision = async () => {
+module.exports = async () => {
   // plugins
   await server.register(Inert)
   await server.register({
@@ -38,17 +38,15 @@ const provision = async () => {
   await server.route(Routes)
 
   // cache
-  await server.cache.provision({ provider: Memory, name: 'gw2ap' })
+  await server.cache.provision({ provider: Catbox, name: 'gw2ap' })
 
   await server.start()
   // eslint-disable-next-line
   console.log(`Server running at: ${server.info.uri}`)
 }
 
-process.on('unhandledRejection', (err) => {
+process.on('unhandledRejection', err => {
   // eslint-disable-next-line
   console.log(err)
   process.exit(1)
 })
-
-module.exports = provision

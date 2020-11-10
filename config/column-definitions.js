@@ -1,6 +1,6 @@
 'use strict'
 
-const COLUMNS = {
+export default {
   TIER_PROGRESS: {
     DATA: 'tierProgress',
     INDEX: 1
@@ -58,5 +58,3 @@ const COLUMNS = {
     INDEX: 14
   }
 }
-
-export { COLUMNS }

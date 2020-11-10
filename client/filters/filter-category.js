@@ -3,13 +3,12 @@
 // Load modules
 import $ from 'jquery'
 import { Filter } from './filter'
-import { COLUMNS } from '../../config/column-definitions'
+import COLUMNS from '../../config/column-definitions'
 
 class FilterCategory extends Filter {
   constructor() {
     super()
-    // eslint-disable-next-line
-    this.filter = (settings, data, dataIndex) => {
+    this.filter = (settings, data) => {
       const category = data[COLUMNS.CATEGORY.INDEX]
       try {
         const categoryId = $(category).data('category-id')
@@ -36,5 +35,4 @@ class FilterCategory extends Filter {
 }
 
 const _filterCategory = new FilterCategory()
-const filterCategory = _filterCategory.action.bind(_filterCategory)
-export { filterCategory }
+export default _filterCategory.action.bind(_filterCategory)

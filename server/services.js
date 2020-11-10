@@ -27,7 +27,7 @@ const log = data => {
 /* eslint-enable */
 
 const getAuthHeader = apiKey => {
-  return { 
+  return {
     headers: { 'Authorization': 'Bearer ' + apiKey }
   }
 }
@@ -39,7 +39,7 @@ const fetch = async (url, options = {}) => {
   }
   else {
     const error = await result.json()
-    throw Boom.badRequest(error.text || 'Bad Request')
+    throw Boom.badRequest(error.text || error.message || 'Bad Request')
   }
 }
 
@@ -260,13 +260,11 @@ Cache.getAchievements = async () => {
 
 const API = {}
 
-// eslint-disable-next-line
-API.getGroups = async (request, h) => {
+API.getGroups = async request => {
   return request.server.methods.Cache.getAchievementGroups()
 }
 
-// eslint-disable-next-line
-const getCategories = API.getCategories = async (request, h) => {
+const getCategories = API.getCategories = async request => {
   const groups = request.server.methods.Cache.getAchievementGroups()
   const categories = request.server.methods.Cache.getAchievementCategories()
 
@@ -293,9 +291,9 @@ const getCategories = API.getCategories = async (request, h) => {
   return _.orderBy(results, ['group.order', 'order'])
 }
 
-const getAchievementsWithCategories = API.getAchievementsWithCategories = async (request, h) => {
-  const categories = getCategories(request, h)
-  const achievements = request.server.methods.Cache.getAchievements()  
+const getAchievementsWithCategories = API.getAchievementsWithCategories = async request => {
+  const categories = getCategories(request)
+  const achievements = request.server.methods.Cache.getAchievements()
 
   const promised = _.zipObject(['categories', 'achievements'], await Promise.all(_.values([categories, achievements])))
 
@@ -322,12 +320,12 @@ const getAchievementsWithCategories = API.getAchievementsWithCategories = async 
   return results
 }
 
-API.processAchievements = async (request, h) => {
-  const achievements = getAchievementsWithCategories(request, h)
+API.processAchievements = async request => {
+  const achievements = getAchievementsWithCategories(request)
   const myAchievements = fetch(GW2_API.URLS.ACCOUNT_ACHIEVEMENTS, getAuthHeader(request.params.apiKey))
-  
+
   const promised = _.zipObject(['achievements', 'myAchievements'], await Promise.all(_.values([achievements, myAchievements])))
-  
+
 
   return _.map(promised.achievements, achievement => {
     const progress = getAchievementProgressByID(promised.myAchievements, achievement.id)
@@ -335,7 +333,7 @@ API.processAchievements = async (request, h) => {
   })
 }
 
-module.exports = { 
+module.exports = {
   Cache,
   API
 }
