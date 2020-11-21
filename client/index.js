@@ -26,7 +26,7 @@ import Plugins from './plugins'
 import Filters from './filters'
 
 // APP CODE
-let $DataTable = null
+let DataTable = null
 let Categories = null
 
 /* eslint-disable */
@@ -57,16 +57,10 @@ const updateApiKey = (apiKey, remember) => {
 }
 
 const initDataTable = data => {
-  // attach custom renderers
-  $.fn.dataTable.render.ellipsis = Plugins.ellipsis
-  $.fn.dataTable.render.wikiLink = Plugins.wikiLink
-  $.fn.dataTable.render.category = Plugins.category.render
-  $.fn.dataTable.render.percentageBars = Plugins.percentageBars
   // attach custom orderers
-  $.fn.dataTable.category = Plugins.category.order
-  $.fn.dataTable.category()
+  Plugins.category.order()
 
-  $DataTable = $('#achievements').DataTable({
+  DataTable = $('#achievements').DataTable({
     data: data,
     dom: '<"clearfix"fl><t><"clearfix"ip>',
     pagingType: 'full',
@@ -108,18 +102,18 @@ const initDataTable = data => {
       },
       {
         targets: COLUMNS.NAME.INDEX,
-        render: $.fn.dataTable.render.wikiLink(35)
+        render: Plugins.wikiLink(35)
       },
       {
         targets: COLUMNS.CATEGORY.INDEX,
-        render: $.fn.dataTable.render.category()
+        render: Plugins.category.render()
       },
       {
         targets: [
           COLUMNS.TOTAL_PROGRESS.INDEX,
           COLUMNS.TIER_PROGRESS.INDEX
         ],
-        render: $.fn.dataTable.render.percentageBars()
+        render: Plugins.percentageBars()
       }
     ],
     order: [[COLUMNS.TIER_PROGRESS.INDEX, 'desc']],
@@ -284,8 +278,8 @@ const loadFilters = () => {
 }
 
 const redrawTable = () => {
-  if ($DataTable) {
-    $DataTable.draw()
+  if (DataTable) {
+    DataTable.draw()
   }
 }
 
@@ -302,8 +296,13 @@ const submitForm = async e => {
   try {
     const achievements = await API.getAchievements(apiKey)
 
-    if (!$DataTable) {
+    if (!DataTable) {
       initDataTable(achievements)
+    }
+    else {
+      DataTable.clear()
+      DataTable.rows.add(achievements).draw('false')
+      redrawTable()
     }
 
     const groups = await API.getGroups()
