@@ -187,6 +187,9 @@ const renderObjective = async bits => {
         table.append(row)
         return $('<div>').append($('<h5>').text(title), table)
       }
+      else if (bits && bits.length > 0 && !bits[0].type) {
+        return ''
+      }
       else {
         return $('<div>').addClass('float-left mr-5').append($('<h5>').text(title), table)
       }
