@@ -27,7 +27,7 @@
     "gasparesganga-jquery-loading-overlay": "^2.1.7",
     "hapi-gate": "^2.1.0",
     "jquery": "^3.5.1",
-    "lodash": "4.17.20",
+    "lodash": "4.17.21",
     "node-fetch": "^2.6.1",
     "popper.js": "^1.16.1"
   },
