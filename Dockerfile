@@ -17,7 +17,7 @@ COPY . /usr/app
 # Build
 RUN npm run build
 
-EXPOSE 3000
+EXPOSE 8080
 
 # When running on Windows, use ENTRYPOINT and comment out CMD
 #ENTRYPOINT [ "npm", "start" ]
