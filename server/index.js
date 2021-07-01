@@ -11,7 +11,7 @@ const GW2API = require('./gw2api')
 
 // Declare internals
 const server = Hapi.server({
-  port: process.env.port || 3000,
+  port: process.env.port || 8080,
   routes: {
     cors: true,
     files: {
