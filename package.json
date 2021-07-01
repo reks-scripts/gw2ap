@@ -29,7 +29,8 @@
     "jquery": "^3.5.1",
     "lodash": "4.17.21",
     "node-fetch": "^2.6.1",
-    "popper.js": "^1.16.1"
+    "popper.js": "^1.16.1",
+    "sass": "^1.35.1"
   },
   "devDependencies": {
     "@babel/core": "7.11.6",
@@ -43,12 +44,11 @@
     "eslint": "^7.10.0",
     "file-loader": "6.1.0",
     "html-webpack-plugin": "4.5.0",
-    "node-sass": "^4.14.1",
     "nodemon": "^2.0.4",
     "npm-run-all": "^4.1.5",
     "sass-loader": "^10.0.2",
     "style-loader": "1.2.1",
-    "webpack": "4.44.2",
+    "webpack": "^4.44.2",
     "webpack-cli": "3.3.12",
     "webpack-dev-server": "3.11.0",
     "webpack-merge": "^5.1.4"

@@ -1,18 +1,18 @@
 FROM node:alpine
 
-RUN apk update && apk add python make g++
+RUN apk update && apk add python2 make g++
 
 # Create app directory
-WORKDIR /usr/src/app
+WORKDIR /usr/app
 
 # Install app dependencies
-COPY package.json .
-COPY package-lock.json .
+COPY package.json /usr/app/package.json
+COPY package-lock.json /usr/app/package-lock.json
 
 RUN npm install
 
 # Bundle app source
-COPY . .
+COPY . /usr/app
 
 # Build
 RUN npm run build
@@ -20,5 +20,5 @@ RUN npm run build
 EXPOSE 3000
 
 # When running on Windows, use ENTRYPOINT and comment out CMD
-# ENTRYPOINT [ "npm", "start" ]
+#ENTRYPOINT [ "npm", "start" ]
 CMD [ "npm", "start" ]
