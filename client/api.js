@@ -5,7 +5,7 @@ import Fetch from 'node-fetch'
 import Boom from 'boom'
 
 // eslint-disable-next-line
-const API_URL = IS_DEV ? 'http://localhost:3000/' : ''
+const API_URL = IS_DEV ? 'http://localhost:8080/' : ''
 const GW2_API = 'https://api.guildwars2.com/v2/'
 
 const fetch = async (url, options) => {

@@ -25,7 +25,7 @@ npm run build
 ### Docker
 ```sh
 docker build -t gw2ap .
-docker run -d -p 3000:3000 --name gw2ap gw2ap .
+docker run -d -p 8080:8080 --name gw2ap gw2ap .
 ```
 
 ## License

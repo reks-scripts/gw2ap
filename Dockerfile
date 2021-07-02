@@ -18,5 +18,5 @@ COPY . /usr/app
 RUN npm run build
 
 # When running on Windows, use ENTRYPOINT and comment out CMD
-#ENTRYPOINT [ "npm", "start" ]
+# ENTRYPOINT [ "npm", "start" ]
 CMD [ "npm", "start" ]
