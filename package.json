@@ -28,7 +28,7 @@
     "hapi-gate": "^2.1.0",
     "jquery": "^3.5.1",
     "lodash": "4.17.21",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^3.1.1",
     "popper.js": "^1.16.1",
     "sass": "^1.35.1"
   },
