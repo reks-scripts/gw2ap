@@ -62,6 +62,9 @@ const renderMastery = mastery => {
     title = 'Icebrood Saga Mastery Point'
     image = 'mp_icebrood_saga.png'
     break
+  case 'unknown':
+    title = 'End of Dragons Mastery Point'
+    image = 'mp_end_of_dragons.png'
   }
 
   return $('<img>')
