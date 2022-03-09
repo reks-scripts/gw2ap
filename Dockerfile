@@ -1,4 +1,4 @@
-FROM node:alpine
+FROM node:16.14.0-stretch
 
 RUN apk update && apk add python2 make g++
 
