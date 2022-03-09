@@ -1,4 +1,4 @@
-FROM node:16.14.0-stretch
+FROM node:16.14.0
 
 RUN apk update && apk add python2 make g++
 
