@@ -324,10 +324,7 @@ API.processAchievements = async request => {
   const achievements = getAchievementsWithCategories(request)
   const myAchievements = await fetch(GW2_API.URLS.ACCOUNT_ACHIEVEMENTS, getAuthHeader(request.params.apiKey))
 
-  console.log(myAchievements)
-
   const promised = _.zipObject(['achievements', 'myAchievements'], await Promise.all(_.values([achievements, myAchievements])))
-
 
   return _.map(promised.achievements, achievement => {
     const progress = getAchievementProgressByID(promised.myAchievements, achievement.id)
