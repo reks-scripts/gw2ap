@@ -16,7 +16,13 @@ const fetch = async (url, options) => {
   }
   else {
     const error = await result.json()
-    throw Boom.badRequest(error.text || error.message || 'Bad Request')
+
+    if (error.statusCode === 503) {
+      return fetch(url, options)
+    }
+    else {
+      throw Boom.badRequest(error.text || error.message || 'Bad Request')
+    }
   }
 }
 
