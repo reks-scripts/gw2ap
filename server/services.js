@@ -44,20 +44,20 @@ const fetch = async (url, options = {}) => {
 }
 
 const getByIds = async (what, ids, batchSize = 0) => {
-  const promises = []
-  let id, promise
+  const results = []
+  let id, result
   while(ids.length) {
     if (batchSize > 1) {
       id = ids.splice(0, batchSize)
-      promise = fetch(`${what}?ids=${id.toString()}`)
+      result = await fetch(`${what}?ids=${id.toString()}`)
     }
     else {
       id = ids.splice(0, 1)
-      promise = fetch(`${what}/${id.toString()}`)
+      result = await fetch(`${what}/${id.toString()}`)
     }
-    promises.push(promise)
+    results.push(result)
   }
-  return _.flatten(await Promise.all(promises))
+  return _.flatten(results)
 }
 
 const repeatable = achievement => {
@@ -322,10 +322,9 @@ const getAchievementsWithCategories = API.getAchievementsWithCategories = async 
 
 API.processAchievements = async request => {
   const achievements = getAchievementsWithCategories(request)
-  const myAchievements = fetch(GW2_API.URLS.ACCOUNT_ACHIEVEMENTS, getAuthHeader(request.params.apiKey))
+  const myAchievements = await fetch(GW2_API.URLS.ACCOUNT_ACHIEVEMENTS, getAuthHeader(request.params.apiKey))
 
   const promised = _.zipObject(['achievements', 'myAchievements'], await Promise.all(_.values([achievements, myAchievements])))
-
 
   return _.map(promised.achievements, achievement => {
     const progress = getAchievementProgressByID(promised.myAchievements, achievement.id)
