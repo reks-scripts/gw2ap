@@ -1,22 +1,23 @@
-FROM node:16-alpine
+FROM node:18-alpine
 
+# Install build tools
 RUN apk update && apk add python3 make g++
 
 # Create app directory
 WORKDIR /usr/app
 
-# Install app dependencies
-COPY package.json /usr/app/package.json
-COPY package-lock.json /usr/app/package-lock.json
+# Copy package files and install deps
+COPY package.json package-lock.json ./
+RUN npm ci
 
-RUN npm install
+# Copy the rest of the source code
+COPY . .
 
-# Bundle app source
-COPY . /usr/app
+# Set NODE_OPTIONS for OpenSSL
+ENV NODE_OPTIONS=--openssl-legacy-provider
 
-# Build
+# Build the app
 RUN npm run build
 
-# When running on Windows, use ENTRYPOINT and comment out CMD
-# ENTRYPOINT [ "npm", "start" ]
-CMD [ "npm", "start" ]
+# Start the app
+CMD ["npm", "start"]
