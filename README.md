@@ -1,5 +1,7 @@
 # [GW2AP](https://gw2ap.com)
 
+Project will remain broken until AI is good enough to fix it.  I simply don't care enough to spend the time to figure it out.
+
 ## Running locally
 
 ```sh
