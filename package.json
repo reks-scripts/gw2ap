@@ -11,9 +11,9 @@
   "scripts": {
     "start": "node app.js",
     "dev-server": "cross-env NODE_ENV=development nodemon ./app.js",
-    "dev-client": "cross-env NODE_ENV=development webpack-dev-server --progress --mode development --config ./webpack.config.dev.js",
+    "dev-client": "cross-env NODE_ENV=development webpack serve --config ./webpack.config.dev.js --progress --mode development",
     "dev": "npm-run-all -p dev-server dev-client",
-    "build": "webpack -p --progress --mode production --config ./webpack.config.build.js --openssl-legacy-provider"
+    "build": "cross-env NODE_ENV=production NODE_OPTIONS=--openssl-legacy-provider webpack --config ./webpack.config.build.js --progress --mode production"
   },
   "dependencies": {
     "@babel/polyfill": "^7.11.5",
