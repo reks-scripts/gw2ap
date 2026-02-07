@@ -4,14 +4,14 @@
 const Path = require('path')
 const Hapi = require('@hapi/hapi')
 const Inert = require('@hapi/inert')
-const Catbox = require('@hapi/catbox-memory')
+const CatboxMemory = require('@hapi/catbox-memory')
 const HapiGate = require('hapi-gate')
 const Routes = require('./routes')
 const GW2API = require('./gw2api')
 
 // Declare internals
 const server = Hapi.server({
-  port: process.env.port || 8080,
+  port: process.env.PORT || 8080,
   routes: {
     cors: true,
     files: {
@@ -38,7 +38,12 @@ module.exports = async () => {
   await server.route(Routes)
 
   // cache
-  await server.cache.provision({ provider: Catbox, name: 'gw2ap' })
+  await server.cache.provision({
+    provider: {
+      constructor: CatboxMemory
+    },
+    name: 'gw2ap'
+  })
 
   await server.start()
   // eslint-disable-next-line

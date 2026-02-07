@@ -291,45 +291,43 @@ const getCategories = API.getCategories = async request => {
   return _.orderBy(results, ['group.order', 'order'])
 }
 
-const getAchievementsWithCategories = API.getAchievementsWithCategories = async request => {
-  const categories = getCategories(request)
-  const achievements = request.server.methods.Cache.getAchievements()
-
-  const promised = _.zipObject(['categories', 'achievements'], await Promise.all(_.values([categories, achievements])))
-
-  const results = []
-  _.forEach(promised.categories, category => {
-    _.forEach(category.achievements, categoryAchievementId => {
-      _.forEach(promised.achievements, achievement => {
-        if (achievement.id === categoryAchievementId) {
-          const result = _.clone(achievement)
-          result.category = {
-            id: category.id,
-            name: category.name,
-            description: category.description,
-            order: category.order,
-            icon: category.icon
-          }
-          result.group = category.group
-          results.push(result)
-          return false // break
-        }
-      })
-    })
-  })
-  return results
-}
-
 API.processAchievements = async request => {
-  const achievements = getAchievementsWithCategories(request)
+  // Make sure we await async functions
+  const achievements = await getAchievementsWithCategories(request)
   const myAchievements = await fetch(GW2_API.URLS.ACCOUNT_ACHIEVEMENTS, getAuthHeader(request.params.apiKey))
 
-  const promised = _.zipObject(['achievements', 'myAchievements'], await Promise.all(_.values([achievements, myAchievements])))
+  const promised = _.zipObject(['achievements', 'myAchievements'], [achievements, myAchievements])
 
-  return _.map(promised.achievements, achievement => {
+  return promised.achievements.map(achievement => {
     const progress = getAchievementProgressByID(promised.myAchievements, achievement.id)
     return flattenAchievement(achievement, progress)
   })
+}
+
+const getAchievementsWithCategories = API.getAchievementsWithCategories = async request => {
+  const categories = await getCategories(request)
+  const achievements = await request.server.methods.Cache.getAchievements()
+
+  const results = []
+  categories.forEach(category => {
+    category.achievements.forEach(categoryAchievementId => {
+      const achievement = achievements.find(a => a.id === categoryAchievementId)
+      if (achievement) {
+        const result = { ...achievement }
+        result.category = {
+          id: category.id,
+          name: category.name,
+          description: category.description,
+          order: category.order,
+          icon: category.icon
+        }
+        result.group = category.group
+        results.push(result)
+      }
+    })
+  })
+
+  return results
 }
 
 module.exports = {
