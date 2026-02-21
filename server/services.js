@@ -1,7 +1,7 @@
 'use strict'
 
 // Load modules
-const Boom = require('boom')
+const Boom = require('@hapi/boom')
 const Fetch = require('node-fetch')
 const _ = require('lodash')
 
