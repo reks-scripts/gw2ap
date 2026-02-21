@@ -110,12 +110,12 @@ module.exports = {
     server.route({
       method: 'GET',
       path: '/api/achievements/groups',
-      handler: withCachePrewarmGuard(API.getGroups)
+      handler: API.getGroups
     })
     server.route({
       method: 'GET',
       path: '/api/achievements/categories',
-      handler: withCachePrewarmGuard(API.getCategories)
+      handler: API.getCategories
     })
     server.route({
       method: 'GET',

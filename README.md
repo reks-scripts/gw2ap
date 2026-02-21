@@ -1,6 +1,6 @@
 # [GW2AP](https://gw2ap.com)
 
-Project will remain broken until AI is good enough to fix it.  I simply don't care enough to spend the time to figure it out.
+2/21/26 UPDATE: GW2AP is FIXED and working again.  It should be a little faster too.
 
 ## Running locally
 
