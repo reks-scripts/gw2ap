@@ -11,6 +11,7 @@ import filterObjectiveCount from './filter-objective-count'
 import filterItem from './filter-reward-item'
 import filterMastery from './filter-reward-mastery'
 import filterTitle from './filter-reward-title'
+import filterUncompleted from './filter-uncompleted'
 
 export default {
   filterCategory,
@@ -23,5 +24,6 @@ export default {
   filterObjectiveCount,
   filterItem,
   filterMastery,
-  filterTitle
+  filterTitle,
+  filterUncompleted
 }

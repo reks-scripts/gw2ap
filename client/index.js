@@ -334,6 +334,7 @@ const bindEvents = () => {
 
   $('#btn-filter-in-progress').on('click', Filters.filterInProgress)
   $('#btn-filter-not-started').on('click', Filters.filterNotStarted)
+  $('#btn-filter-uncompleted').on('click', Filters.filterUncompleted)
   $('#btn-filter-complete').on('click', Filters.filterComplete)
   $('#btn-filter-title').on('click', Filters.filterTitle)
   $('#btn-filter-mastery').on('click', Filters.filterMastery)
