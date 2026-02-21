@@ -1,5 +1,5 @@
-'use strict'
+'use strict';
 
-const provision = require('./server')
+const provision = require('./server');
 
-provision()
+provision();

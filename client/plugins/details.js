@@ -1,21 +1,21 @@
-'use strict'
+'use strict';
 
 // Load modules
-import $ from 'jquery'
-import _ from 'lodash'
-import API from '../api'
+import $ from 'jquery';
+import _ from 'lodash';
+import API from '../api';
 
 const numberWithCommas = x => {
-  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-}
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+};
 
 const renderLink = name => {
-  let href = name.split(' ').join('_')
-  href = href.replace(/[[\]{}|<>#"]/g, '')
-  href = encodeURI(href)
+  let href = name.split(' ').join('_');
+  href = href.replace(/[[\]{}|<>#"]/g, '');
+  href = encodeURI(href);
 
-  return $(`<a href="https://wiki.guildwars2.com/wiki/Special:Search/${href}" target="_blank">`)
-}
+  return $(`<a href="https://wiki.guildwars2.com/wiki/Special:Search/${href}" target="_blank">`);
+};
 
 const renderItem = skin => {
   const icon = $('<img>')
@@ -23,12 +23,12 @@ const renderItem = skin => {
     .attr('title', skin.name)
     .attr('alt', skin.name)
     .attr('height', '32')
-    .attr('width', '32')
+    .attr('width', '32');
 
-  const link = renderLink(skin.name)
+  const link = renderLink(skin.name);
 
-  return link.append(icon)
-}
+  return link.append(icon);
+};
 
 const renderTitle = title => {
   const icon = $('<img>')
@@ -36,35 +36,35 @@ const renderTitle = title => {
     .attr('title', title.name)
     .attr('alt', title.name)
     .attr('height', '32')
-    .attr('width', '32')
+    .attr('width', '32');
 
-  const link = renderLink(title.name)
+  const link = renderLink(title.name);
 
-  return link.append(icon)
-}
+  return link.append(icon);
+};
 
 const renderMastery = mastery => {
-  let title, image
+  let title, image;
   switch (mastery.region.toLowerCase()) {
   case 'tyria':
-    title = 'Central Tyria Mastery Point'
-    image = 'mp_central_tyria.png'
-    break
+    title = 'Central Tyria Mastery Point';
+    image = 'mp_central_tyria.png';
+    break;
   case 'maguuma':
-    title = 'Heart of Thorns Mastery Point'
-    image = 'mp_heart_of_thorns.png'
-    break
+    title = 'Heart of Thorns Mastery Point';
+    image = 'mp_heart_of_thorns.png';
+    break;
   case 'desert':
-    title = 'Path of Fire Mastery Point'
-    image = 'mp_path_of_fire.png'
-    break
+    title = 'Path of Fire Mastery Point';
+    image = 'mp_path_of_fire.png';
+    break;
   case 'tundra':
-    title = 'Icebrood Saga Mastery Point'
-    image = 'mp_icebrood_saga.png'
-    break
+    title = 'Icebrood Saga Mastery Point';
+    image = 'mp_icebrood_saga.png';
+    break;
   case 'unknown':
-    title = 'End of Dragons Mastery Point'
-    image = 'mp_end_of_dragons.png'
+    title = 'End of Dragons Mastery Point';
+    image = 'mp_end_of_dragons.png';
   }
 
   return $('<img>')
@@ -72,186 +72,186 @@ const renderMastery = mastery => {
     .attr('title', title)
     .attr('alt', title)
     .attr('height', '32')
-    .attr('width', '32')
-}
+    .attr('width', '32');
+};
 
 const renderSummary = d => {
-  let section = $('<section>')
+  let section = $('<section>');
 
-  section.append($('<p>').text(`${d.earnedAP} / ${d.totalAP}`).append($('<span>').addClass('ap')))
+  section.append($('<p>').text(`${d.earnedAP} / ${d.totalAP}`).append($('<span>').addClass('ap')));
 
   if (d.tiers && d.tiers.length > 1) {
-    let currentTier = 1
+    let currentTier = 1;
     _.forEach(d.tiers, (tier, index) => {
       if (tier.done) {
-        currentTier = index + 1
+        currentTier = index + 1;
       }
-    })
-    section.append($('<p>').text(`${currentTier} / ${d.tiers.length} Tiers`))
+    });
+    section.append($('<p>').text(`${currentTier} / ${d.tiers.length} Tiers`));
   }
 
   if (!_.isEmpty(d.progress)) {
-    section.append($('<p>').text(`${d.progress.current} / ${d.progress.max} Objectives`))
+    section.append($('<p>').text(`${d.progress.current} / ${d.progress.max} Objectives`));
   }
 
-  return section
-}
+  return section;
+};
 
 const renderRewards = async rewards => {
   if (typeof rewards === 'string') {
-    const parsed = JSON.parse(rewards)
-    let promises = []
+    const parsed = JSON.parse(rewards);
+    let promises = [];
     _.forEach(parsed, reward => {
       if (reward.type === 'Item') {
-        promises.push(API.getItem(reward.id))
+        promises.push(API.getItem(reward.id));
       }
       else if (reward.type === 'Title') {
-        promises.push(API.getTitle(reward.id))
+        promises.push(API.getTitle(reward.id));
       }
-    })
+    });
 
-    const promised = await Promise.all(promises)
+    const promised = await Promise.all(promises);
 
-    const section = $('<section>')
+    const section = $('<section>');
     _.forEach(parsed, reward => {
       if (reward.type === 'Mastery') {
-        section.append(renderMastery(reward))
+        section.append(renderMastery(reward));
       }
-    })
+    });
 
     _.forEach(promised, item => {
       if (!Object.hasOwnProperty.call(item, 'type')) {
-        section.append(renderTitle(item))
+        section.append(renderTitle(item));
       }
       else {
-        section.append(renderItem(item))
+        section.append(renderItem(item));
       }
-    })
+    });
 
-    return section
+    return section;
   }
   else {
-    return ''
+    return '';
   }
-}
+};
 
 const renderDescription = d => {
-  const div = $('<div>')
+  const div = $('<div>');
   if (d.requirement) {
-    div.append($('<p>').text(d.requirement))
+    div.append($('<p>').text(d.requirement));
   }
   if (d.description) {
-    div.append($('<p>').addClass('flavor').html(d.description))
+    div.append($('<p>').addClass('flavor').html(d.description));
   }
-  return div
-}
+  return div;
+};
 
 const renderObjective = async bits => {
-  let promises = []
-  const table = $('<table>').addClass('table-sm mb-3')
-  let row = $('<tr>')
+  let promises = [];
+  const table = $('<table>').addClass('table-sm mb-3');
+  let row = $('<tr>');
 
   _.forEach(bits, bit => {
     if (bit.type === 'Text') {
-      row = $('<tr>')
+      row = $('<tr>');
       if (bit.done) {
-        row.append($('<td>').addClass('done').text('✓'))
+        row.append($('<td>').addClass('done').text('✓'));
       }
       else {
-        row.append($('<td>').addClass('notdone').text('—'))
+        row.append($('<td>').addClass('notdone').text('—'));
       }
-      row.append($('<td>').append($('<small>').text(bit.text)))
-      table.append(row)
+      row.append($('<td>').append($('<small>').text(bit.text)));
+      table.append(row);
     }
     else if (bit.type === 'Skin') {
-      promises.push(API.getSkin(bit.id))
+      promises.push(API.getSkin(bit.id));
     }
     else if (bit.type === 'Item') {
-      promises.push(API.getItem(bit.id))
+      promises.push(API.getItem(bit.id));
     }
-  })
+  });
 
   try {
-    const promised = await Promise.all(promises)
+    const promised = await Promise.all(promises);
 
     _.forEach(promised, item => {
-      const rendered = renderItem(item)
-      const bit = _.find(bits, { id: item.id })
+      const rendered = renderItem(item);
+      const bit = _.find(bits, { id: item.id });
       if (!bit.done) {
-        rendered.find('img').addClass('notdone')
+        rendered.find('img').addClass('notdone');
       }
-      row.append($('<td>').addClass('skin').append(rendered))
-    })
+      row.append($('<td>').addClass('skin').append(rendered));
+    });
 
-    let title = 'Objectives:'
+    let title = 'Objectives:';
     if (bits.length) {
       if (bits && bits.length > 0 && bits[0].type === 'Skin' || bits[0].type === 'Item') {
-        title = 'Collection:'
-        table.append(row)
-        return $('<div>').append($('<h5>').text(title), table)
+        title = 'Collection:';
+        table.append(row);
+        return $('<div>').append($('<h5>').text(title), table);
       }
       else if (bits && bits.length > 0 && !bits[0].type) {
-        return ''
+        return '';
       }
       else {
-        return $('<div>').addClass('float-left mr-5').append($('<h5>').text(title), table)
+        return $('<div>').addClass('float-left mr-5').append($('<h5>').text(title), table);
       }
     }
   }
   catch (e) {
     // bad item or skin id from API
-    return ''
+    return '';
   }
-}
+};
 
 const renderTiers = tiers => {
   if (tiers.length > 1) {
-    const table = $('<table>').addClass('table-sm mb-3')
+    const table = $('<table>').addClass('table-sm mb-3');
     _.forEach(tiers, (tier, index) => {
-      const row = $('<tr>')
+      const row = $('<tr>');
       if (tier.done) {
-        row.append($('<td>').addClass('done').text('✓'))
+        row.append($('<td>').addClass('done').text('✓'));
       }
       else {
-        row.append($('<td>').addClass('notdone').text('—'))
+        row.append($('<td>').addClass('notdone').text('—'));
       }
-      row.append($('<td>').append($('<small>').text(`Tier ${(index + 1)}`)))
-      row.append($('<td>').append($('<small>').text(`${tier.points}`).append($('<span>').addClass('ap'))))
-      row.append($('<td>').append($('<small>').text(`${numberWithCommas(tier.count)} objectives completed`)))
-      table.append(row)
-    })
+      row.append($('<td>').append($('<small>').text(`Tier ${(index + 1)}`)));
+      row.append($('<td>').append($('<small>').text(`${tier.points}`).append($('<span>').addClass('ap'))));
+      row.append($('<td>').append($('<small>').text(`${numberWithCommas(tier.count)} objectives completed`)));
+      table.append(row);
+    });
 
-    return $('<div>').addClass('float-left').append($('<h5>').text('Tiers:'), table)
+    return $('<div>').addClass('float-left').append($('<h5>').text('Tiers:'), table);
   }
   else {
-    return ''
+    return '';
   }
-}
+};
 
 const format = async d => {
-  const div = $('<div>').addClass('details')
+  const div = $('<div>').addClass('details');
 
-  div.append(renderSummary(d))
-  div.append(await renderRewards(d.rewards))
-  div.append(renderDescription(d))
-  div.append(await renderObjective(d.bits))
-  div.append(renderTiers(d.tiers))
+  div.append(renderSummary(d));
+  div.append(await renderRewards(d.rewards));
+  div.append(renderDescription(d));
+  div.append(await renderObjective(d.bits));
+  div.append(renderTiers(d.tiers));
 
-  return div
-}
+  return div;
+};
 
 export default async function() {
-  const tr = $(this).closest('tr')
-  const row = $(this).closest('table').DataTable().row(tr)
+  const tr = $(this).closest('tr');
+  const row = $(this).closest('table').DataTable().row(tr);
 
   if (row.child.isShown()) {
-    row.child.hide()
-    tr.removeClass('shown')
+    row.child.hide();
+    tr.removeClass('shown');
   }
   else {
-    var div = $('<div>').addClass( 'loading' ).text( 'Loading...' )
-    row.child(div).show()
-    tr.addClass('shown')
-    row.child(await format(row.data()))
+    var div = $('<div>').addClass( 'loading' ).text( 'Loading...' );
+    row.child(div).show();
+    tr.addClass('shown');
+    row.child(await format(row.data()));
   }
 }

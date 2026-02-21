@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 // DATA TABLES PLUGIN
 export default (cutoff, wordbreak, escapeHtml) => {
@@ -7,30 +7,30 @@ export default (cutoff, wordbreak, escapeHtml) => {
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-  }
+      .replace(/"/g, '&quot;');
+  };
 
   return (d, type) => {
     // Order, search and type get the original data
     if (type !== 'display') {
-      return d
+      return d;
     }
     if (typeof d !== 'number' && typeof d !== 'string') {
-      return d
+      return d;
     }
-    d = d.toString() // cast numbers
+    d = d.toString(); // cast numbers
     if (d.length <= cutoff) {
-      return d
+      return d;
     }
-    let shortened = d.substr(0, cutoff - 1)
+    let shortened = d.substr(0, cutoff - 1);
     // Find the last white space character in the string
     if (wordbreak) {
-      shortened = shortened.replace(/\s([^\s]*)$/, '')
+      shortened = shortened.replace(/\s([^\s]*)$/, '');
     }
     // Protect against uncontrolled HTML input
     if (escapeHtml) {
-      shortened = esc(shortened)
+      shortened = esc(shortened);
     }
-    return `<span class="ellipsis" title="${esc(d)}">${shortened}&#8230;</span>`
-  }
-}
+    return `<span class="ellipsis" title="${esc(d)}">${shortened}&#8230;</span>`;
+  };
+};

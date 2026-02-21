@@ -1,12 +1,12 @@
-'use strict'
+'use strict';
 
 // Load modules
-const Boom = require('@hapi/boom')
-const Fetch = require('node-fetch')
-const _ = require('lodash')
+const Boom = require('@hapi/boom');
+const Fetch = require('node-fetch');
+const _ = require('lodash');
 
 // Declare internals
-const BASE_API = 'https://api.guildwars2.com/v2'
+const BASE_API = 'https://api.guildwars2.com/v2';
 
 const GW2_API = {
   MAX_BATCH_SIZE: 200,
@@ -21,7 +21,7 @@ const GW2_API = {
     ACHIEVEMENTS_GROUPS: `${BASE_API}/achievements/groups`,
     ACHIEVEMENTS_CATEGORIES: `${BASE_API}/achievements/categories`
   }
-}
+};
 
 /* eslint-disable */
 const log = data => {
@@ -32,374 +32,374 @@ const log = data => {
 const getAuthHeader = apiKey => {
   return {
     headers: { 'Authorization': 'Bearer ' + apiKey }
-  }
-}
+  };
+};
 
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const parseErrorMessage = async result => {
   try {
-    const error = await result.json()
-    return error.text || error.message || result.statusText || 'Bad Request'
+    const error = await result.json();
+    return error.text || error.message || result.statusText || 'Bad Request';
   }
   catch (error) {
-    const text = await result.text().catch(() => '')
-    return text || result.statusText || 'Bad Request'
+    const text = await result.text().catch(() => '');
+    return text || result.statusText || 'Bad Request';
   }
-}
+};
 
 const getRetryDelay = (result, attempt) => {
-  const retryAfter = Number(result.headers.get('retry-after'))
+  const retryAfter = Number(result.headers.get('retry-after'));
   if (retryAfter > 0) {
-    return retryAfter * 1000
+    return retryAfter * 1000;
   }
-  return GW2_API.RETRY_BASE_DELAY_MS * Math.pow(2, attempt)
-}
+  return GW2_API.RETRY_BASE_DELAY_MS * Math.pow(2, attempt);
+};
 
 const fetch = async (url, options = {}, attempt = 0) => {
   try {
-    const result = await Fetch(url, options)
+    const result = await Fetch(url, options);
     if (result.ok) {
-      return result.json()
+      return result.json();
     }
 
-    const message = await parseErrorMessage(result)
-    const isRetryable = result.status === 429 || result.status >= 500
+    const message = await parseErrorMessage(result);
+    const isRetryable = result.status === 429 || result.status >= 500;
 
     if (isRetryable && attempt < GW2_API.MAX_RETRIES) {
-      await sleep(getRetryDelay(result, attempt))
-      return fetch(url, options, attempt + 1)
+      await sleep(getRetryDelay(result, attempt));
+      return fetch(url, options, attempt + 1);
     }
 
-    throw Boom.boomify(new Error(message), { statusCode: result.status })
+    throw Boom.boomify(new Error(message), { statusCode: result.status });
   }
   catch (error) {
     if (Boom.isBoom(error)) {
-      throw error
+      throw error;
     }
 
     if (attempt < GW2_API.MAX_RETRIES) {
-      await sleep(GW2_API.RETRY_BASE_DELAY_MS * Math.pow(2, attempt))
-      return fetch(url, options, attempt + 1)
+      await sleep(GW2_API.RETRY_BASE_DELAY_MS * Math.pow(2, attempt));
+      return fetch(url, options, attempt + 1);
     }
 
-    throw Boom.serverUnavailable(error.message || 'Service Unavailable')
+    throw Boom.serverUnavailable(error.message || 'Service Unavailable');
   }
-}
+};
 
 const mapWithConcurrency = async (items, concurrency, iteratee) => {
   if (!items.length) {
-    return []
+    return [];
   }
 
-  const results = new Array(items.length)
-  let current = 0
-  const maxWorkers = Math.max(1, Math.min(concurrency, items.length))
+  const results = new Array(items.length);
+  let current = 0;
+  const maxWorkers = Math.max(1, Math.min(concurrency, items.length));
 
   const workers = _.times(maxWorkers, () => {
     return (async () => {
       while (current < items.length) {
-        const index = current
-        current += 1
-        results[index] = await iteratee(items[index], index)
+        const index = current;
+        current += 1;
+        results[index] = await iteratee(items[index], index);
       }
-    })()
-  })
+    })();
+  });
 
-  await Promise.all(workers)
-  return results
-}
+  await Promise.all(workers);
+  return results;
+};
 
 const getByIds = async (what, ids, batchSize = 0, concurrency = 1) => {
   if (!ids || !ids.length) {
-    return []
+    return [];
   }
 
   const batches = batchSize > 1
     ? _.chunk(ids, batchSize)
-    : ids.map(id => [id])
+    : ids.map(id => [id]);
 
   const results = await mapWithConcurrency(batches, concurrency, batch => {
     if (batchSize > 1) {
-      return fetch(`${what}?ids=${batch.toString()}`)
+      return fetch(`${what}?ids=${batch.toString()}`);
     }
-    return fetch(`${what}/${batch[0]}`)
-  })
+    return fetch(`${what}/${batch[0]}`);
+  });
 
-  return _.flatten(results)
-}
+  return _.flatten(results);
+};
 
 const repeatable = achievement => {
   if (achievement.flags.includes('Repeatable')) {
-    return _.round(achievement.point_cap / achievement.tiers[0].points)
+    return _.round(achievement.point_cap / achievement.tiers[0].points);
   }
-  return 0
-}
+  return 0;
+};
 
 const isDone = (achievement, progress) => {
   if (progress.done) {
-    return true
+    return true;
   }
   if (progress.repeated && progress.repeated >= repeatable(achievement)) {
-    return true
+    return true;
   }
   if (achievement.point_cap < 0) {
-    return true
+    return true;
   }
-  return false
-}
+  return false;
+};
 
 const getTotalProgress = (achievement, progress) => {
-  let result = 0
+  let result = 0;
   if (isDone(achievement, progress)) {
-    return 100
+    return 100;
   }
   if (repeatable(achievement)) {
     if (progress.repeated) {
-      return _.round(progress.repeated / repeatable(achievement) * 100, 1)
+      return _.round(progress.repeated / repeatable(achievement) * 100, 1);
     } else {
-      return 0
+      return 0;
     }
   }
   _.forEach(achievement.tiers, tier => {
     if (tier.count > progress.current ) {
-      result = _.round(progress.current / tier.count * 100, 1)
+      result = _.round(progress.current / tier.count * 100, 1);
     }
-  })
-  return result
-}
+  });
+  return result;
+};
 
 const getTierProgress = (achievement, progress) => {
-  let result = 0
+  let result = 0;
   if (isDone(achievement, progress)) {
-    return 100
+    return 100;
   }
   _.forEach(achievement.tiers, tier => {
     if (tier.count > progress.current ) {
-      result = _.round(progress.current / tier.count * 100, 1)
-      return false // break
+      result = _.round(progress.current / tier.count * 100, 1);
+      return false; // break
     }
-  })
-  return result
-}
+  });
+  return result;
+};
 
 const getNextTierAP = (achievement, progress) => {
-  let result = 0
+  let result = 0;
   if (isDone(achievement, progress)) {
-    return 0
+    return 0;
   }
   _.forEach(achievement.tiers, tier => {
     if (!progress.current || progress.current && tier.count > progress.current) {
-      result = tier.points
-      return false // break
+      result = tier.points;
+      return false; // break
     }
-  })
-  return result
-}
+  });
+  return result;
+};
 
 const getRemainingAP = (achievement, progress) => {
   if (isDone(achievement, progress)) {
-    return 0
+    return 0;
   }
   if (repeatable(achievement)) {
     if (progress.repeated) {
-      return achievement.point_cap - progress.repeated * achievement.tiers[0].points
+      return achievement.point_cap - progress.repeated * achievement.tiers[0].points;
     } else {
-      return achievement.point_cap
+      return achievement.point_cap;
     }
   }
   return _.sumBy(achievement.tiers, tier => {
     if (!progress.current || progress.current && tier.count > progress.current) {
-      return tier.points
+      return tier.points;
     }
-    return 0
-  })
-}
+    return 0;
+  });
+};
 
 const getEarnedAP = (achievement, progress) => {
   return _.sumBy(achievement.tiers, tier => {
     if (progress.current && tier.count <= progress.current) {
-      return tier.points
+      return tier.points;
     }
-    return 0
-  })
-}
+    return 0;
+  });
+};
 
 const getTotalAP = achievement => {
-  return _.sumBy(achievement.tiers, tier => tier.points)
-}
+  return _.sumBy(achievement.tiers, tier => tier.points);
+};
 
 const getRewards = achievement => {
   if (!achievement.rewards || !achievement.rewards.length) {
-    return []
+    return [];
   }
-  return JSON.stringify(achievement.rewards)
-}
+  return JSON.stringify(achievement.rewards);
+};
 
 const getFlags = achievement => {
   if (!achievement.flags || !achievement.flags.length) {
-    return []
+    return [];
   }
-  return achievement.flags
-}
+  return achievement.flags;
+};
 
 const getCount = achievement => {
-  return _.maxBy(achievement.tiers, tier => tier.count).count
-}
+  return _.maxBy(achievement.tiers, tier => tier.count).count;
+};
 
 const getTiers = (achievement, progress) => {
   if (!achievement.tiers || !achievement.tiers.length) {
-    return []
+    return [];
   }
   _.forEach(achievement.tiers, tier => {
     if (progress.current && progress.current >= tier.count) {
-      tier.done = true
+      tier.done = true;
     }
     else {
-      tier.done = false
+      tier.done = false;
     }
-  })
-  return achievement.tiers
-}
+  });
+  return achievement.tiers;
+};
 
 const getBits = (achievement, progress) => {
   if (!achievement.bits || !achievement.bits.length) {
-    return []
+    return [];
   }
   _.forEach(achievement.bits, (bit, index) => {
     if (progress.done || progress.bits && progress.bits.includes(index)) {
-      bit.done = true
+      bit.done = true;
     }
     else {
-      bit.done = false
+      bit.done = false;
     }
-  })
-  return achievement.bits
-}
+  });
+  return achievement.bits;
+};
 
 const flattenAchievement = (achievement, progress) => {
-  const result = _.clone(achievement)
-  result.progress = _.clone(progress)
-  result.totalProgress = getTotalProgress(achievement, progress)
-  result.remainingAP = getRemainingAP(achievement, progress)
-  result.earnedAP = getEarnedAP(achievement, progress)
-  result.tierProgress = getTierProgress(achievement, progress)
-  result.nextTierAP = getNextTierAP(achievement, progress)
-  result.tiers = getTiers(achievement, progress)
-  result.bits = getBits(achievement, progress)
-  result.rewards = getRewards(achievement)
-  result.flags = getFlags(achievement)
-  result.count = getCount(achievement)
-  result.totalAP = getTotalAP(achievement)
-  return result
-}
+  const result = _.clone(achievement);
+  result.progress = _.clone(progress);
+  result.totalProgress = getTotalProgress(achievement, progress);
+  result.remainingAP = getRemainingAP(achievement, progress);
+  result.earnedAP = getEarnedAP(achievement, progress);
+  result.tierProgress = getTierProgress(achievement, progress);
+  result.nextTierAP = getNextTierAP(achievement, progress);
+  result.tiers = getTiers(achievement, progress);
+  result.bits = getBits(achievement, progress);
+  result.rewards = getRewards(achievement);
+  result.flags = getFlags(achievement);
+  result.count = getCount(achievement);
+  result.totalAP = getTotalAP(achievement);
+  return result;
+};
 
 
-const Cache = {}
+const Cache = {};
 
 Cache.getAchievementGroups = async () => {
-  const groups = await fetch(`${GW2_API.URLS.ACHIEVEMENTS_GROUPS}?ids=all`)
+  const groups = await fetch(`${GW2_API.URLS.ACHIEVEMENTS_GROUPS}?ids=all`);
   // don't include dailies
   _.forEach(groups, (group, key) => {
     if (group.id === GW2_API.DAILY_GROUP_ID) {
-      groups.splice(key, 1)
-      return false // break
+      groups.splice(key, 1);
+      return false; // break
     }
-  })
-  return _.orderBy(groups, group => group.order)
-}
+  });
+  return _.orderBy(groups, group => group.order);
+};
 
 Cache.getAchievementCategories = async () => {
-  const categories = await fetch(`${GW2_API.URLS.ACHIEVEMENTS_CATEGORIES}?ids=all`)
-  return _.orderBy(categories, category => category.order)
-}
+  const categories = await fetch(`${GW2_API.URLS.ACHIEVEMENTS_CATEGORIES}?ids=all`);
+  return _.orderBy(categories, category => category.order);
+};
 
 Cache.getAchievements = async () => {
-  const achievementIds = await fetch(GW2_API.URLS.ACHIEVEMENTS)
+  const achievementIds = await fetch(GW2_API.URLS.ACHIEVEMENTS);
   const achievements = await getByIds(
     GW2_API.URLS.ACHIEVEMENTS,
     achievementIds,
     GW2_API.MAX_BATCH_SIZE,
     GW2_API.MAX_CONCURRENT_REQUESTS
-  )
-  return achievements
-}
+  );
+  return achievements;
+};
 
 
-const API = {}
+const API = {};
 
 API.getGroups = async request => {
-  return request.server.methods.Cache.getAchievementGroups()
-}
+  return request.server.methods.Cache.getAchievementGroups();
+};
 
 const getCategories = API.getCategories = async request => {
-  const groups = request.server.methods.Cache.getAchievementGroups()
-  const categories = request.server.methods.Cache.getAchievementCategories()
+  const groups = request.server.methods.Cache.getAchievementGroups();
+  const categories = request.server.methods.Cache.getAchievementCategories();
 
-  const promised = _.zipObject(['groups', 'categories'], await Promise.all(_.values([groups, categories])))
+  const promised = _.zipObject(['groups', 'categories'], await Promise.all(_.values([groups, categories])));
 
-  const results = []
+  const results = [];
   _.forEach(promised.groups, group => {
     _.forEach(group.categories, groupCategoryId => {
       _.forEach(promised.categories, category => {
         if (category.id === groupCategoryId) {
-          const result = _.clone(category)
+          const result = _.clone(category);
           result.group = {
             id: group.id,
             name: group.name,
             description: group.description,
             order: group.order
-          }
-          results.push(result)
-          return false // break
+          };
+          results.push(result);
+          return false; // break
         }
-      })
-    })
-  })
-  return _.orderBy(results, ['group.order', 'order'])
-}
+      });
+    });
+  });
+  return _.orderBy(results, ['group.order', 'order']);
+};
 
 API.processAchievements = async request => {
   // Make sure we await async functions
-  const achievements = await getAchievementsWithCategories(request)
-  const myAchievements = await fetch(GW2_API.URLS.ACCOUNT_ACHIEVEMENTS, getAuthHeader(request.params.apiKey))
+  const achievements = await getAchievementsWithCategories(request);
+  const myAchievements = await fetch(GW2_API.URLS.ACCOUNT_ACHIEVEMENTS, getAuthHeader(request.params.apiKey));
 
-  const myAchievementsByID = _.keyBy(myAchievements, 'id')
+  const myAchievementsByID = _.keyBy(myAchievements, 'id');
 
   return achievements.map(achievement => {
-    const progress = myAchievementsByID[achievement.id] || {}
-    return flattenAchievement(achievement, progress)
-  })
-}
+    const progress = myAchievementsByID[achievement.id] || {};
+    return flattenAchievement(achievement, progress);
+  });
+};
 
 const getAchievementsWithCategories = API.getAchievementsWithCategories = async request => {
-  const categories = await getCategories(request)
-  const achievements = await request.server.methods.Cache.getAchievements()
-  const achievementsByID = _.keyBy(achievements, 'id')
+  const categories = await getCategories(request);
+  const achievements = await request.server.methods.Cache.getAchievements();
+  const achievementsByID = _.keyBy(achievements, 'id');
 
-  const results = []
+  const results = [];
   categories.forEach(category => {
     category.achievements.forEach(categoryAchievementId => {
-      const achievement = achievementsByID[categoryAchievementId]
+      const achievement = achievementsByID[categoryAchievementId];
       if (achievement) {
-        const result = { ...achievement }
+        const result = { ...achievement };
         result.category = {
           id: category.id,
           name: category.name,
           description: category.description,
           order: category.order,
           icon: category.icon
-        }
-        result.group = category.group
-        results.push(result)
+        };
+        result.group = category.group;
+        results.push(result);
       }
-    })
-  })
+    });
+  });
 
-  return results
-}
+  return results;
+};
 
 module.exports = {
   Cache,
   API
-}
+};

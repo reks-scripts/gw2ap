@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 export default {
   TIER_PROGRESS: {
@@ -57,4 +57,4 @@ export default {
     DATA: 'id',
     INDEX: 14
   }
-}
+};

@@ -1,38 +1,38 @@
-'use strict'
+'use strict';
 
 // Load modules
-import $ from 'jquery'
-import { Filter } from './filter'
-import COLUMNS from '../../config/column-definitions'
+import $ from 'jquery';
+import { Filter } from './filter';
+import COLUMNS from '../../config/column-definitions';
 
 class FilterCategory extends Filter {
   constructor() {
-    super()
+    super();
     this.filter = (settings, data) => {
-      const category = data[COLUMNS.CATEGORY.INDEX]
+      const category = data[COLUMNS.CATEGORY.INDEX];
       try {
-        const categoryId = $(category).data('category-id')
+        const categoryId = $(category).data('category-id');
         if (this.filterCategories.includes(categoryId.toString())) {
-          return true
+          return true;
         } else {
-          return false
+          return false;
         }
       } catch (e) {
-        return false
+        return false;
       }
-    }
-    this.active = false
+    };
+    this.active = false;
   }
   // override base class action()
   action(e) {
-    this.filterCategories = e
+    this.filterCategories = e;
     if (!this.active) {
-      $.fn.dataTable.ext.search.push(this.filter)
-      this.active = true
+      $.fn.dataTable.ext.search.push(this.filter);
+      this.active = true;
     }
-    $('#achievements').DataTable().draw()
+    $('#achievements').DataTable().draw();
   }
 }
 
-const _filterCategory = new FilterCategory()
-export default _filterCategory.action.bind(_filterCategory)
+const _filterCategory = new FilterCategory();
+export default _filterCategory.action.bind(_filterCategory);

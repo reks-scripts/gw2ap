@@ -1,39 +1,39 @@
-'use strict'
+'use strict';
 
 // Load modules
-import $ from 'jquery'
+import $ from 'jquery';
 
-const category = {}
+const category = {};
 
 // DATA TABLES PLUGIN
 category.render = () => {
   return d => {
-    return `<img src="${d.icon}" alt="${d.name}" title="${d.name}" data-type="category" data-category-id="${d.id}" width="32" height="32" />`
-  }
-}
+    return `<img src="${d.icon}" alt="${d.name}" title="${d.name}" data-type="category" data-category-id="${d.id}" width="32" height="32" />`;
+  };
+};
 
 category.order = () => {
-  let types = $.fn.dataTable.ext.type
+  let types = $.fn.dataTable.ext.type;
 
   // Add type detection
   types.detect.unshift(d => {
     try {
-      const type = $(d).data('type')
+      const type = $(d).data('type');
       if (type === 'category') {
-        return 'category'
+        return 'category';
       } else {
-        return null
+        return null;
       }
     } catch (e) {
-      return null
+      return null;
     }
-  })
+  });
 
   // Add sorting method
   types.order['category-pre'] = d => {
-    const category = $(d).attr('title')
-    return category
-  }
-}
+    const category = $(d).attr('title');
+    return category;
+  };
+};
 
-export default category
+export default category;

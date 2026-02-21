@@ -1,10 +1,10 @@
-'use strict'
+'use strict';
 
-import category from './category'
-import details from './details'
-import ellipsis from './ellipsis'
-import percentageBars from './percentage-bars'
-import wikiLink from './wiki-link'
+import category from './category';
+import details from './details';
+import ellipsis from './ellipsis';
+import percentageBars from './percentage-bars';
+import wikiLink from './wiki-link';
 
 export default {
   category,
@@ -12,4 +12,4 @@ export default {
   ellipsis,
   percentageBars,
   wikiLink
-}
+};

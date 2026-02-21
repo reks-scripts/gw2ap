@@ -17,6 +17,6 @@ rules:
     - single
   semi:
     - error
-    - never
+    - always
   no-trailing-spaces:
    - error

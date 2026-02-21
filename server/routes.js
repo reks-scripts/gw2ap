@@ -1,8 +1,8 @@
-'use strict'
+'use strict';
 
-const isProd = process.env.NODE_ENV === 'production'
+const isProd = process.env.NODE_ENV === 'production';
 
-const routes = []
+const routes = [];
 
 if (isProd) {
   routes.push(
@@ -25,7 +25,7 @@ if (isProd) {
       path: '/browserconfig.xml',
       handler: (request, h) => h.file('./dist/browserconfig.xml')
     }
-  )
+  );
 }
 
 // Always last
@@ -39,6 +39,6 @@ routes.push({
       index: true
     }
   }
-})
+});
 
-module.exports = routes
+module.exports = routes;

@@ -1,33 +1,33 @@
-'use strict'
+'use strict';
 
 // Load modules
-import $ from 'jquery'
-import _ from 'lodash'
-import COLUMNS from '../config/column-definitions'
+import $ from 'jquery';
+import _ from 'lodash';
+import COLUMNS from '../config/column-definitions';
 
 // Load application styles
-import '@babel/polyfill'
-import 'styles/index.scss'
-import 'bootstrap'
-import 'bootstrap-select'
-import 'gasparesganga-jquery-loading-overlay'
-import 'datatables.net-bs4/css/dataTables.bootstrap4.css'
+import '@babel/polyfill';
+import 'styles/index.scss';
+import 'bootstrap';
+import 'bootstrap-select';
+import 'gasparesganga-jquery-loading-overlay';
+import 'datatables.net-bs4/css/dataTables.bootstrap4.css';
 
 // Data tables
-import 'datatables.net-bs4'
+import 'datatables.net-bs4';
 
 // API
-import API from './api'
+import API from './api';
 
 // Data tables plugins
-import Plugins from './plugins'
+import Plugins from './plugins';
 
 // Data tables filters
-import Filters from './filters'
+import Filters from './filters';
 
 // APP CODE
-let DataTable = null
-let Categories = null
+let DataTable = null;
+let Categories = null;
 
 /* eslint-disable */
 const log = data => {
@@ -36,29 +36,29 @@ const log = data => {
 /* eslint-enable */
 
 const setApiKey = value => {
-  localStorage.setItem('api-key', value)
-}
+  localStorage.setItem('api-key', value);
+};
 
 const getApiKey = () => {
-  return localStorage.getItem('api-key')
-}
+  return localStorage.getItem('api-key');
+};
 
 const removeApiKey = () => {
-  localStorage.removeItem('api-key')
-}
+  localStorage.removeItem('api-key');
+};
 
 const updateApiKey = (apiKey, remember) => {
   if (remember) {
-    setApiKey(apiKey)
+    setApiKey(apiKey);
   }
   else {
-    removeApiKey()
+    removeApiKey();
   }
-}
+};
 
 const initDataTable = data => {
   // attach custom orderers
-  Plugins.category.order()
+  Plugins.category.order();
 
   DataTable = $('#achievements').DataTable({
     data: data,
@@ -139,16 +139,16 @@ const initDataTable = data => {
       { data: COLUMNS.COUNT.DATA },
       { data: COLUMNS.ID.DATA }
     ]
-  })
-  $('.dataTable').wrap('<div style="overflow:auto" />')
+  });
+  $('.dataTable').wrap('<div style="overflow:auto" />');
 
-  $('#achievements').on('click tap', 'tbody td.details-control', Plugins.details)
-}
+  $('#achievements').on('click tap', 'tbody td.details-control', Plugins.details);
+};
 
 const initGroupSelect = groups => {
   _.forEach(groups, group => {
-    $('#select-group').append(`<option value="${group.id}" selected>${group.name}</option>`)
-  })
+    $('#select-group').append(`<option value="${group.id}" selected>${group.name}</option>`);
+  });
   $('#select-group').selectpicker({
     style: 'form-control custom-select',
     selectedTextFormat: 'count > 2',
@@ -157,37 +157,37 @@ const initGroupSelect = groups => {
     size: 10,
     countSelectedText: (numSelected, numTotal) => {
       if (numSelected === numTotal) {
-        return 'All'
+        return 'All';
       } else {
-        return '{0} groups selected'
+        return '{0} groups selected';
       }
     }
-  })
+  });
   $('#select-group').on('changed.bs.select', e => {
-    const groups = $(e.currentTarget).val()
-    Filters.filterGroup(groups)
-    buildCategorySelect()
-    $('#select-category').selectpicker('refresh')
-  })
-}
+    const groups = $(e.currentTarget).val();
+    Filters.filterGroup(groups);
+    buildCategorySelect();
+    $('#select-category').selectpicker('refresh');
+  });
+};
 
 const buildCategorySelect = () => {
-  const groups = $('#select-group').val()
-  let currentOptGroup = ''
-  $('#select-category').empty()
+  const groups = $('#select-group').val();
+  let currentOptGroup = '';
+  $('#select-category').empty();
   _.forEach(Categories, category => {
     if (groups.includes(category.group.id)) {
       if (currentOptGroup !== category.group.name) {
-        currentOptGroup = category.group.name
-        $('#select-category').append(`<optgroup label="${category.group.name}" />`)
+        currentOptGroup = category.group.name;
+        $('#select-category').append(`<optgroup label="${category.group.name}" />`);
       }
-      $('#select-category optgroup:last').append(`<option value="${category.id}" data-group-id="${category.group.id}" selected>${category.name}</option>`)
+      $('#select-category optgroup:last').append(`<option value="${category.id}" data-group-id="${category.group.id}" selected>${category.name}</option>`);
     }
-  })
-}
+  });
+};
 
 const initCategorySelect = () => {
-  buildCategorySelect()
+  buildCategorySelect();
   $('#select-category').selectpicker({
     style: 'form-control custom-select',
     selectedTextFormat: 'count > 1',
@@ -196,184 +196,184 @@ const initCategorySelect = () => {
     size: 10,
     countSelectedText: (numSelected, numTotal) => {
       if (numSelected === numTotal) {
-        return 'All'
+        return 'All';
       } else {
-        return '{0} categories selected'
+        return '{0} categories selected';
       }
     }
-  })
+  });
   $('#select-category').on('changed.bs.select refreshed.bs.select', e => {
-    const categories = $(e.currentTarget).val()
-    Filters.filterCategory(categories)
-    updateFilters()
-  })
-}
+    const categories = $(e.currentTarget).val();
+    Filters.filterCategory(categories);
+    updateFilters();
+  });
+};
 
 const toggleAdditionalFilters = e => {
   if ($(e.currentTarget).hasClass('collapsed')) {
-    $(e.currentTarget).text('Hide additional filters')
+    $(e.currentTarget).text('Hide additional filters');
   } else {
-    $(e.currentTarget).text('Show additional filters')
+    $(e.currentTarget).text('Show additional filters');
   }
-}
+};
 
 const setFilters = value => {
-  localStorage.setItem('filters', JSON.stringify(value))
-}
+  localStorage.setItem('filters', JSON.stringify(value));
+};
 
 const getFilters = () => {
-  return JSON.parse(localStorage.getItem('filters'))
-}
+  return JSON.parse(localStorage.getItem('filters'));
+};
 
 const removeFilters = () => {
-  localStorage.removeItem('filters')
-}
+  localStorage.removeItem('filters');
+};
 
 const getFilterState = () => {
-  const filterState = {}
+  const filterState = {};
   $('.filter-settings').each((index, filter) => {
     if ($(filter).attr('id')) {
       if ($(filter).attr('type') === 'checkbox') {
-        filterState[$(filter).attr('id')] = $(filter).is(':checked')
+        filterState[$(filter).attr('id')] = $(filter).is(':checked');
       } else {
-        filterState[$(filter).attr('id')] = $(filter).val()
+        filterState[$(filter).attr('id')] = $(filter).val();
       }
     }
-  })
-  return filterState
-}
+  });
+  return filterState;
+};
 
 const updateFilters = () => {
-  const remember = $('#remember-filters').is(':checked')
+  const remember = $('#remember-filters').is(':checked');
   if (remember) {
-    setFilters(getFilterState())
+    setFilters(getFilterState());
   }
   else {
-    removeFilters()
+    removeFilters();
   }
-}
+};
 
 const loadFilters = () => {
-  const filters = getFilters()
+  const filters = getFilters();
 
   if (filters) {
     _.forEach(filters, (value, key) => {
-      const filter = `#${key}`
+      const filter = `#${key}`;
       if ($(filter).attr('type') === 'checkbox') {
         if (value === true) {
-          $(filter).prop('checked', true).triggerHandler('click')
+          $(filter).prop('checked', true).triggerHandler('click');
         }
         else {
-          $(filter).prop('checked', false)
+          $(filter).prop('checked', false);
         }
       }
       else if (_.isArray(value) && $(filter).selectpicker('val')) {
-        $(filter).selectpicker('val', value)
+        $(filter).selectpicker('val', value);
       }
       else {
-        $(filter).val(value).trigger('change')
+        $(filter).val(value).trigger('change');
       }
-    })
+    });
   }
-}
+};
 
 const redrawTable = () => {
   if (DataTable) {
-    DataTable.draw()
+    DataTable.draw();
   }
-}
+};
 
 const submitForm = async e => {
-  e.preventDefault()
-  $.LoadingOverlay('show')
-  $('#error').hide().empty()
+  e.preventDefault();
+  $.LoadingOverlay('show');
+  $('#error').hide().empty();
 
-  const apiKey = $('#api-key').val()
-  const remember = $('#remember-api-key').is(':checked')
+  const apiKey = $('#api-key').val();
+  const remember = $('#remember-api-key').is(':checked');
 
-  updateApiKey(apiKey, remember)
+  updateApiKey(apiKey, remember);
 
   try {
-    const achievements = await API.getAchievements(apiKey)
+    const achievements = await API.getAchievements(apiKey);
 
     if (!DataTable) {
-      initDataTable(achievements)
+      initDataTable(achievements);
     }
     else {
-      DataTable.clear()
-      DataTable.rows.add(achievements).draw('false')
-      redrawTable()
+      DataTable.clear();
+      DataTable.rows.add(achievements).draw('false');
+      redrawTable();
     }
 
-    const groups = await API.getGroups()
-    initGroupSelect(groups)
-    Categories = await API.getCategories()
-    initCategorySelect()
+    const groups = await API.getGroups();
+    initGroupSelect(groups);
+    Categories = await API.getCategories();
+    initCategorySelect();
 
-    loadFilters()
+    loadFilters();
 
     if (!$('#btn-filter-in-progress').hasClass('active')) {
-      $('#btn-filter-in-progress').trigger('click')
+      $('#btn-filter-in-progress').trigger('click');
     }
-    $('#page-1').hide()
-    $('#page-2').show()
+    $('#page-1').hide();
+    $('#page-2').show();
   }
   catch (e) {
-    let error = _.get(e, 'error', 'Bad Request')
-    let message = _.get(e, 'message', '')
+    let error = _.get(e, 'error', 'Bad Request');
+    let message = _.get(e, 'message', '');
     if (message) {
-      error = `${error}: ${message}`
+      error = `${error}: ${message}`;
     }
-    $('#error').append(`${error}`).show()
+    $('#error').append(`${error}`).show();
   }
-  $.LoadingOverlay('hide')
-}
+  $.LoadingOverlay('hide');
+};
 
 const bindEvents = () => {
-  window.addEventListener('resize', redrawTable)
+  window.addEventListener('resize', redrawTable);
 
-  $('#btn-filter-in-progress').on('click', Filters.filterInProgress)
-  $('#btn-filter-not-started').on('click', Filters.filterNotStarted)
-  $('#btn-filter-uncompleted').on('click', Filters.filterUncompleted)
-  $('#btn-filter-complete').on('click', Filters.filterComplete)
-  $('#btn-filter-title').on('click', Filters.filterTitle)
-  $('#btn-filter-mastery').on('click', Filters.filterMastery)
-  $('#btn-filter-item').on('click', Filters.filterItem)
-  $('#filter-min-next-tier').on('blur change keyup', Filters.filterMinNextTier)
-  $('#filter-min-remaining').on('blur change keyup', Filters.filterMinRemaining)
-  $('#filter-objective-logic').on('change', Filters.filterObjectiveCount)
-  $('#filter-objective-count').on('blur change keyup', Filters.filterObjectiveCount)
+  $('#btn-filter-in-progress').on('click', Filters.filterInProgress);
+  $('#btn-filter-not-started').on('click', Filters.filterNotStarted);
+  $('#btn-filter-uncompleted').on('click', Filters.filterUncompleted);
+  $('#btn-filter-complete').on('click', Filters.filterComplete);
+  $('#btn-filter-title').on('click', Filters.filterTitle);
+  $('#btn-filter-mastery').on('click', Filters.filterMastery);
+  $('#btn-filter-item').on('click', Filters.filterItem);
+  $('#filter-min-next-tier').on('blur change keyup', Filters.filterMinNextTier);
+  $('#filter-min-remaining').on('blur change keyup', Filters.filterMinRemaining);
+  $('#filter-objective-logic').on('change', Filters.filterObjectiveCount);
+  $('#filter-objective-count').on('blur change keyup', Filters.filterObjectiveCount);
 
-  $('#btn-additional-filters').on('click', toggleAdditionalFilters)
+  $('#btn-additional-filters').on('click', toggleAdditionalFilters);
 
-  $('#remember-filters').on('click', updateFilters)
-  $('.filter-settings').on('change', updateFilters)
+  $('#remember-filters').on('click', updateFilters);
+  $('.filter-settings').on('change', updateFilters);
 
-  $('form').on('submit', submitForm)
-  $('#btn-refresh').on('click', submitForm)
-}
+  $('form').on('submit', submitForm);
+  $('#btn-refresh').on('click', submitForm);
+};
 
 const loadForm = () => {
-  const apiKey = getApiKey()
+  const apiKey = getApiKey();
   if (apiKey) {
-    $('#api-key').val(apiKey)
-    $('#remember-api-key').prop('checked', true)
+    $('#api-key').val(apiKey);
+    $('#remember-api-key').prop('checked', true);
   }
   else {
-    $('#api-key').val('')
-    $('#remember-api-key').prop('checked', false)
+    $('#api-key').val('');
+    $('#remember-api-key').prop('checked', false);
   }
 
-  const filters = getFilters()
+  const filters = getFilters();
   if (filters) {
-    $('#remember-filters').prop('checked', true)
+    $('#remember-filters').prop('checked', true);
   }
   else {
-    $('#remember-filters').prop('checked', false)
+    $('#remember-filters').prop('checked', false);
   }
-}
+};
 
 $(() => {
-  loadForm()
-  bindEvents()
-})
+  loadForm();
+  bindEvents();
+});
