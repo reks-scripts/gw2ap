@@ -1,5 +1,7 @@
 # [GW2AP](https://gw2ap.com)
 
+2/21/26 UPDATE: GW2AP is FIXED and working again.  It should be a little faster too.
+
 ## Running locally
 
 ```sh

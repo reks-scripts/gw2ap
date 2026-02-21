@@ -1,5 +1,6 @@
 const path = require('path')
 const webpack = require('webpack')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 // Is the current build a development build
@@ -36,6 +37,15 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: path.join(__dirname, '/client/index.ejs'),
       title: appHtmlTitle
+    }),
+
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: path.join(__dirname, 'assets'),
+          to: 'assets'
+        }
+      ]
     })
   ],
   module: {

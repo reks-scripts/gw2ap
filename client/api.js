@@ -1,55 +1,68 @@
 'use strict'
 
-// Load modules
-import Fetch from 'node-fetch'
-import Boom from 'boom'
+// Browser-safe API helper
 
 // eslint-disable-next-line
 const API_URL = IS_DEV ? 'http://localhost:8080/' : ''
 const GW2_API = 'https://api.guildwars2.com/v2/'
 
-const fetch = async (url, options) => {
-  options = options || {}
-  const result = await Fetch(url, options)
+class ApiError extends Error {
+  constructor(message, status) {
+    super(message)
+    this.name = 'ApiError'
+    this.status = status
+  }
+}
+
+const fetchJson = async (url, options = {}, retry = true) => {
+  const result = await fetch(url, options)
+
   if (result.ok) {
     return result.json()
   }
-  else {
-    const error = await result.json()
 
-    if (error.statusCode === 503) {
-      return fetch(url, options)
-    }
-    else {
-      throw Boom.badRequest(error.text || error.message || 'Bad Request')
-    }
+  let errorBody
+  try {
+    errorBody = await result.json()
+  } catch (e) {
+    errorBody = {}
   }
+
+  // Retry once on 503 (same behavior you had before)
+  if (result.status === 503 && retry) {
+    return fetchJson(url, options, false)
+  }
+
+  throw new ApiError(
+    errorBody.text || errorBody.message || 'Bad Request',
+    result.status
+  )
 }
 
 const API = {}
 
 API.getGroups = async () => {
-  return fetch(`${API_URL}api/achievements/groups`)
+  return fetchJson(`${API_URL}api/achievements/groups`)
 }
 
 API.getCategories = async () => {
-  return fetch(`${API_URL}api/achievements/categories`)
+  return fetchJson(`${API_URL}api/achievements/categories`)
 }
 
 API.getAchievements = async apiKey => {
-  return fetch(`${API_URL}api/achievements/${apiKey}`)
+  return fetchJson(`${API_URL}api/achievements/${apiKey}`)
 }
 
 API.getSkin = async id => {
-  return fetch(`${GW2_API}skins/${id}`)
+  return fetchJson(`${GW2_API}skins/${id}`)
 }
 
 API.getItem = async id => {
-  return fetch(`${GW2_API}items/${id}`)
+  return fetchJson(`${GW2_API}items/${id}`)
 }
 
 API.getTitle = async id => {
-  return fetch(`${GW2_API}titles/${id}`)
+  return fetchJson(`${GW2_API}titles/${id}`)
 }
 
 export default API

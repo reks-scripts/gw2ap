@@ -10,6 +10,9 @@ const BASE_API = 'https://api.guildwars2.com/v2'
 
 const GW2_API = {
   MAX_BATCH_SIZE: 200,
+  MAX_CONCURRENT_REQUESTS: 12,
+  MAX_RETRIES: 3,
+  RETRY_BASE_DELAY_MS: 500,
   DAILY_GROUP_ID: '18DB115A-8637-4290-A636-821362A3C4A8',
   URLS: {
     ACCOUNT: `${BASE_API}/account`,
@@ -32,31 +35,97 @@ const getAuthHeader = apiKey => {
   }
 }
 
-const fetch = async (url, options = {}) => {
-  const result = await Fetch(url, options)
-  if (result.ok) {
-    return result.json()
-  }
-  else {
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
+
+const parseErrorMessage = async result => {
+  try {
     const error = await result.json()
-    throw Boom.badRequest(error.text || error.message || 'Bad Request')
+    return error.text || error.message || result.statusText || 'Bad Request'
+  }
+  catch (error) {
+    const text = await result.text().catch(() => '')
+    return text || result.statusText || 'Bad Request'
   }
 }
 
-const getByIds = async (what, ids, batchSize = 0) => {
-  const results = []
-  let id, result
-  while(ids.length) {
-    if (batchSize > 1) {
-      id = ids.splice(0, batchSize)
-      result = await fetch(`${what}?ids=${id.toString()}`)
-    }
-    else {
-      id = ids.splice(0, 1)
-      result = await fetch(`${what}/${id.toString()}`)
-    }
-    results.push(result)
+const getRetryDelay = (result, attempt) => {
+  const retryAfter = Number(result.headers.get('retry-after'))
+  if (retryAfter > 0) {
+    return retryAfter * 1000
   }
+  return GW2_API.RETRY_BASE_DELAY_MS * Math.pow(2, attempt)
+}
+
+const fetch = async (url, options = {}, attempt = 0) => {
+  try {
+    const result = await Fetch(url, options)
+    if (result.ok) {
+      return result.json()
+    }
+
+    const message = await parseErrorMessage(result)
+    const isRetryable = result.status === 429 || result.status >= 500
+
+    if (isRetryable && attempt < GW2_API.MAX_RETRIES) {
+      await sleep(getRetryDelay(result, attempt))
+      return fetch(url, options, attempt + 1)
+    }
+
+    throw Boom.boomify(new Error(message), { statusCode: result.status })
+  }
+  catch (error) {
+    if (Boom.isBoom(error)) {
+      throw error
+    }
+
+    if (attempt < GW2_API.MAX_RETRIES) {
+      await sleep(GW2_API.RETRY_BASE_DELAY_MS * Math.pow(2, attempt))
+      return fetch(url, options, attempt + 1)
+    }
+
+    throw Boom.serverUnavailable(error.message || 'Service Unavailable')
+  }
+}
+
+const mapWithConcurrency = async (items, concurrency, iteratee) => {
+  if (!items.length) {
+    return []
+  }
+
+  const results = new Array(items.length)
+  let current = 0
+  const maxWorkers = Math.max(1, Math.min(concurrency, items.length))
+
+  const workers = _.times(maxWorkers, () => {
+    return (async () => {
+      while (current < items.length) {
+        const index = current
+        current += 1
+        results[index] = await iteratee(items[index], index)
+      }
+    })()
+  })
+
+  await Promise.all(workers)
+  return results
+}
+
+const getByIds = async (what, ids, batchSize = 0, concurrency = 1) => {
+  if (!ids || !ids.length) {
+    return []
+  }
+
+  const batches = batchSize > 1
+    ? _.chunk(ids, batchSize)
+    : ids.map(id => [id])
+
+  const results = await mapWithConcurrency(batches, concurrency, batch => {
+    if (batchSize > 1) {
+      return fetch(`${what}?ids=${batch.toString()}`)
+    }
+    return fetch(`${what}/${batch[0]}`)
+  })
+
   return _.flatten(results)
 }
 
@@ -178,10 +247,6 @@ const getCount = achievement => {
   return _.maxBy(achievement.tiers, tier => tier.count).count
 }
 
-const getAchievementProgressByID = (myAchievements, id) => {
-  return _.find(myAchievements, { id: id }) || {}
-}
-
 const getTiers = (achievement, progress) => {
   if (!achievement.tiers || !achievement.tiers.length) {
     return []
@@ -233,8 +298,7 @@ const flattenAchievement = (achievement, progress) => {
 const Cache = {}
 
 Cache.getAchievementGroups = async () => {
-  const groupIds = await fetch(GW2_API.URLS.ACHIEVEMENTS_GROUPS)
-  const groups = await getByIds(GW2_API.URLS.ACHIEVEMENTS_GROUPS, groupIds)
+  const groups = await fetch(`${GW2_API.URLS.ACHIEVEMENTS_GROUPS}?ids=all`)
   // don't include dailies
   _.forEach(groups, (group, key) => {
     if (group.id === GW2_API.DAILY_GROUP_ID) {
@@ -246,14 +310,18 @@ Cache.getAchievementGroups = async () => {
 }
 
 Cache.getAchievementCategories = async () => {
-  const categoryIds = await fetch(GW2_API.URLS.ACHIEVEMENTS_CATEGORIES)
-  const categories = await getByIds(GW2_API.URLS.ACHIEVEMENTS_CATEGORIES, categoryIds)
+  const categories = await fetch(`${GW2_API.URLS.ACHIEVEMENTS_CATEGORIES}?ids=all`)
   return _.orderBy(categories, category => category.order)
 }
 
 Cache.getAchievements = async () => {
   const achievementIds = await fetch(GW2_API.URLS.ACHIEVEMENTS)
-  const achievements = await getByIds(GW2_API.URLS.ACHIEVEMENTS, achievementIds, GW2_API.MAX_BATCH_SIZE)
+  const achievements = await getByIds(
+    GW2_API.URLS.ACHIEVEMENTS,
+    achievementIds,
+    GW2_API.MAX_BATCH_SIZE,
+    GW2_API.MAX_CONCURRENT_REQUESTS
+  )
   return achievements
 }
 
@@ -291,45 +359,44 @@ const getCategories = API.getCategories = async request => {
   return _.orderBy(results, ['group.order', 'order'])
 }
 
-const getAchievementsWithCategories = API.getAchievementsWithCategories = async request => {
-  const categories = getCategories(request)
-  const achievements = request.server.methods.Cache.getAchievements()
-
-  const promised = _.zipObject(['categories', 'achievements'], await Promise.all(_.values([categories, achievements])))
-
-  const results = []
-  _.forEach(promised.categories, category => {
-    _.forEach(category.achievements, categoryAchievementId => {
-      _.forEach(promised.achievements, achievement => {
-        if (achievement.id === categoryAchievementId) {
-          const result = _.clone(achievement)
-          result.category = {
-            id: category.id,
-            name: category.name,
-            description: category.description,
-            order: category.order,
-            icon: category.icon
-          }
-          result.group = category.group
-          results.push(result)
-          return false // break
-        }
-      })
-    })
-  })
-  return results
-}
-
 API.processAchievements = async request => {
-  const achievements = getAchievementsWithCategories(request)
+  // Make sure we await async functions
+  const achievements = await getAchievementsWithCategories(request)
   const myAchievements = await fetch(GW2_API.URLS.ACCOUNT_ACHIEVEMENTS, getAuthHeader(request.params.apiKey))
 
-  const promised = _.zipObject(['achievements', 'myAchievements'], await Promise.all(_.values([achievements, myAchievements])))
+  const myAchievementsByID = _.keyBy(myAchievements, 'id')
 
-  return _.map(promised.achievements, achievement => {
-    const progress = getAchievementProgressByID(promised.myAchievements, achievement.id)
+  return achievements.map(achievement => {
+    const progress = myAchievementsByID[achievement.id] || {}
     return flattenAchievement(achievement, progress)
   })
+}
+
+const getAchievementsWithCategories = API.getAchievementsWithCategories = async request => {
+  const categories = await getCategories(request)
+  const achievements = await request.server.methods.Cache.getAchievements()
+  const achievementsByID = _.keyBy(achievements, 'id')
+
+  const results = []
+  categories.forEach(category => {
+    category.achievements.forEach(categoryAchievementId => {
+      const achievement = achievementsByID[categoryAchievementId]
+      if (achievement) {
+        const result = { ...achievement }
+        result.category = {
+          id: category.id,
+          name: category.name,
+          description: category.description,
+          order: category.order,
+          icon: category.icon
+        }
+        result.group = category.group
+        results.push(result)
+      }
+    })
+  })
+
+  return results
 }
 
 module.exports = {
