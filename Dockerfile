@@ -1,23 +1,28 @@
-FROM node:18-alpine
+FROM node:22-alpine AS build
 
-# Install build tools
-RUN apk update && apk add python3 make g++
+WORKDIR /usr/src/app
 
-# Create app directory
-WORKDIR /usr/app
+# Toolchain for native module compilation during install/build.
+RUN apk add --no-cache python3 make g++
 
-# Copy package files and install deps
 COPY package.json package-lock.json ./
 RUN npm ci
 
-# Copy the rest of the source code
 COPY . .
-
-# Set NODE_OPTIONS for OpenSSL
-ENV NODE_OPTIONS=--openssl-legacy-provider
-
-# Build the app
 RUN npm run build
+RUN npm prune --omit=dev && npm cache clean --force
 
-# Start the app
-CMD ["npm", "start"]
+FROM gcr.io/distroless/nodejs22-debian12:nonroot AS runtime
+
+WORKDIR /usr/src/app
+
+ENV NODE_ENV=production
+
+COPY --from=build /usr/src/app/node_modules ./node_modules
+COPY --from=build /usr/src/app/dist ./dist
+COPY --from=build /usr/src/app/server ./server
+COPY --from=build /usr/src/app/app.js ./app.js
+COPY --from=build /usr/src/app/package.json ./package.json
+
+EXPOSE 8080
+CMD ["app.js"]
