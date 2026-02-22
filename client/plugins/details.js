@@ -44,30 +44,62 @@ const renderTitle = title => {
 };
 
 const renderMastery = mastery => {
+  if (!mastery || typeof mastery.region !== 'string') {
+    return null;
+  }
+
+  const region = mastery.region.toLowerCase();
   let title, image;
-  switch (mastery.region.toLowerCase()) {
+  switch (region) {
   case 'tyria':
+  case 'central tyria':
     title = 'Central Tyria Mastery Point';
     image = 'mp_central_tyria.png';
     break;
   case 'maguuma':
+  case 'heart of thorns':
     title = 'Heart of Thorns Mastery Point';
     image = 'mp_heart_of_thorns.png';
     break;
   case 'desert':
+  case 'path of fire':
     title = 'Path of Fire Mastery Point';
     image = 'mp_path_of_fire.png';
     break;
   case 'tundra':
+  case 'icebrood saga':
     title = 'Icebrood Saga Mastery Point';
     image = 'mp_icebrood_saga.png';
     break;
+  case 'jade':
   case 'unknown':
+  case 'end of dragons':
     title = 'End of Dragons Mastery Point';
     image = 'mp_end_of_dragons.png';
+    break;
+  case 'sky':
+  case 'secrets of the obscure':
+    title = 'Secrets of the Obscure Mastery Point';
+    image = 'mp_secrets_of_the_obscure.png';
+    break;
+  case 'wild':
+  case 'janthir wilds':
+    title = 'Janthir Wilds Mastery Point';
+    image = 'mp_janthir_wilds.png';
+    break;
+  case 'magic':
+  case 'visions of eternity':
+    title = 'Visions of Eternity Mastery Point';
+    image = 'mp_visions_of_eternity.png';
+    break;
+  default:
+    return null;
   }
 
   return $('<img>')
+    .on('error', function() {
+      $(this).remove();
+    })
     .attr('src', `./assets/images/${image}`)
     .attr('title', title)
     .attr('alt', title)
@@ -115,7 +147,10 @@ const renderRewards = async rewards => {
     const section = $('<section>');
     _.forEach(parsed, reward => {
       if (reward.type === 'Mastery') {
-        section.append(renderMastery(reward));
+        const renderedMastery = renderMastery(reward);
+        if (renderedMastery) {
+          section.append(renderedMastery);
+        }
       }
     });
 
